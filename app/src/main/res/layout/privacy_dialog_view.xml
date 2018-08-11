@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+       <TextView
+           android:layout_width="match_parent"
+           android:text="信息的收集我们收集数据是根据您与我们的互动和您所做出的选择，包括您的隐私设置以及您使用的产品和功能。我们收集的数据可能包括 SOK / API / JS 代码版本、浏览器、互联网服务提供商、 IP 地址、平台、时间戳、应用标识符、应用程序版本、应用分发渠道、独立设备标识符、 105 广告标识符（旧 FA ）、安卓广告主标识符、网卡（ MAC ）地址、国际移动设备识别码（ IMEI ）、设备型号、终端制造厂商、终端设备操作系统版本、会话启动／停止时间、语言所在地、时区和网络状态（ WIFi 等）、硬盘、 CpU 和电池使用情况等。个人数据的使用当您使用账号登录 App 时，我们会收集您个人填写的基本信息和智能穿戴设备采集的健康数据，我们会对您的数据进行存储和分析，以便给您提供更好的数据展示和健康指导。如何不希望您的个人数据被收集，您可以使用无账号登录。个人数据的跨境传输我们的业务可能需要我们转移您的个人数据至欧洲经济区以外的国家，这些国家可能包括中国。我们会采取适当的措施以确保您个人数据的接收者履行保密义务。如果您不希望您的个人数据被收集和转移，您可以选择使用无账号登录。您的权利当您使用我们 App 时，我们会如上文所述，对信息进行收集，信息的收集是为了更好的优化和管理软件，以便给您提供更好的服务。对于您个人数据的收集，您有权选择账号登录或无账号登录，使用账号登录我们会收集您的个人数据，无账号登录我们不会收集您的个人数据。如果您认为我们对您个人数据和信息的处理违反了适用法律，您可以向监管机构投诉。"
+           android:layout_height="wrap_content" />
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <Button
+        android:layout_width="match_parent"
+        android:text="确定"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

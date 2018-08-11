@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="#4DDDFF"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include layout="@layout/b30_home_title_layout" />
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/white"/>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_marginBottom="61dp"
+        android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <!--圆的布局-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:background="#4DDDFF"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content">
+
+                <com.littlejie.circleprogress.circleprogress.WaveProgress
+                    android:id="@+id/b30ProgressBar"
+                    android:layout_width="230dp"
+                    android:layout_height="230dp"
+                    android:layout_gravity="center"
+                    app:darkWaveAnimTime="3000"
+                    app:darkWaveColor="#1ebae3"
+                    app:lightWaveAnimTime="4000"
+                    app:lightWaveColor="#34c7e7"
+                    app:lightWaveDirect="R2L"
+                    app:lockWave="false"
+                    app:valueColor="@color/white"
+                    app:valueSize="45sp"
+                    app:waveHeight="35dp"
+                    app:waveNum="1" />
+
+
+                <ImageView
+                    android:layout_width="260dp"
+                    android:layout_gravity="center"
+                    android:background="@mipmap/icon_record_circule_luminous"
+                    android:layout_height="260dp" />
+
+
+            </FrameLayout>
+
+
+            <TextView
+                android:id="@+id/b30GoalStepTv"
+                android:layout_width="match_parent"
+                android:text="目标步数：10000 步"
+                android:textColor="@color/white"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <!--日期-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_margin="5dp"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textSize="20sp"
+                    android:text="@string/today"
+                    android:padding="3dp"
+                    android:layout_gravity="center|top"
+                    android:gravity="center"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center|bottom"
+                    android:visibility="invisible"
+                    android:background="@drawable/fgm_home_move"
+                    android:layout_height="wrap_content" />
+
+
+            </LinearLayout>
+
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textSize="20sp"
+                    android:text="@string/yesterday"
+                    android:padding="3dp"
+                    android:layout_gravity="center|top"
+                    android:gravity="center"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center|bottom"
+                    android:visibility="invisible"
+                    android:background="@drawable/fgm_home_move"
+                    android:layout_height="wrap_content" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content">
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textSize="20sp"
+                    android:text="前天"
+                    android:padding="3dp"
+                    android:layout_gravity="center|top"
+                    android:gravity="center"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_gravity="center|bottom"
+                    android:visibility="invisible"
+                    android:background="@drawable/fgm_home_move"
+                    android:layout_height="wrap_content" />
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+        <!--运动图表-->
+        <include layout="@layout/include_b30_barchart"/>
+        <!--睡眠图表-->
+        <include layout="@layout/include_b30_sleep_chart"/>
+        <!--心率图表-->
+        <include layout="@layout/include_b30_heart_chart"/>
+        <!--血压图表-->
+        <include layout="@layout/include_b30_bload_chart"/>
+
+        <include layout="@layout/include_home_bottom_layout"/>
+
+    </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+</LinearLayout>
