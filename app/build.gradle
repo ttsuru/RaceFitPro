@@ -145,39 +145,6 @@ dependencies {
     compile files('libs/OTA.jar')
     compile(name: 'bluetooth', ext: 'aar')
 
-    //H9 OTA
-
-    //    compile 'com.github.mcxtzhang:PathAnimView:V1.0.0'//心率测试图
-    //compile files('libs/mpandroidchartlibrary-2-2-4.jar')
-
-    //compile 'no.nordicsemi.android:dfu:1.1.1'
-
-    //noinspection GradleCompatible
-
-    //compile 'cn.dreamtobe.percentsmoothhandler:library:0.1.1'//下载进度条
-
-    //循环进度按钮
-
-    //FloatingActionButton
-
-    //compile 'com.github.anastr:speedviewlib:1.1.4'//SpeedView，Android端的类似油表表盘的显示。效果很惊人，功能强大而且有多种外形。你可以更改任何东西的颜色。
-
-    //compile 'me.tankery.lib:circularSeekBar:1.1.3'//安卓自定义圆形搜索栏/进度（圆圈、半圆、椭圆）
-
-    //用于视图的Android L波纹效应包装器
-
-    //一个快速的图像视图（和可绘制的）支持圆角（和卵圆形或圆圈）的原始例子罗曼盖伊。它支持许多额外的功能，包括椭圆形，圆形矩形，ScaleTypes和TrimoDes。
-
-    //一个iOS风格的边缘滚动效果，支持几乎所有滚动视图。
-
-    //Android定制的Chrome定制。简化开发并提供更高级别的类，包括在设备上不可用Chrome的情况下回退。
-
-    //compile files('libs/vpprotocol_1.1.2.jar')
-
-    //compile files('libs/vpbluetooth_1.0.3.jar')
-
-    //compile files('libs/vpprotocol_1.0.6.jar')
-
     //compile project(':dfu')
     compile files('libs/xcl-charts.jar')
 

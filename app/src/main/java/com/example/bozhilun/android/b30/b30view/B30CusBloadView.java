@@ -155,7 +155,7 @@ public class B30CusBloadView extends View {
         super.onDraw(canvas);
         Log.e(TAG,"-----onDraw----");
         //绘制横线
-        drawHorizonLin(canvas);
+        //drawHorizonLin(canvas);
         //绘制日期
         drawTimeLin(canvas);
         //绘制点
