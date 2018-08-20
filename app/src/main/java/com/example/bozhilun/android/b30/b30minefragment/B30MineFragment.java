@@ -2,6 +2,7 @@ package com.example.bozhilun.android.b30.b30minefragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aigestudio.wheelpicker.widgets.ProfessionPick;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -21,6 +23,7 @@ import com.example.bozhilun.android.activity.MyPersonalActivity;
 import com.example.bozhilun.android.b30.B30DeviceActivity;
 import com.example.bozhilun.android.bleutil.MyCommandManager;
 import com.example.bozhilun.android.siswatch.LazyFragment;
+import com.example.bozhilun.android.siswatch.NewSearchActivity;
 import com.example.bozhilun.android.siswatch.utils.WatchUtils;
 import com.example.bozhilun.android.util.SharedPreferencesUtils;
 import com.example.bozhilun.android.util.URLs;
@@ -29,6 +32,9 @@ import com.example.bozhilun.android.w30s.utils.httputils.RequestView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,10 +63,18 @@ public class B30MineFragment extends LazyFragment implements RequestView {
     TextView b30MineDeviceTv;
     @BindView(R.id.b30MineUnitTv)
     TextView b30MineUnitTv;
+    @BindView(R.id.b30MineSportGoalTv)
+    TextView b30MineSportGoalTv;
+    @BindView(R.id.b30MineSleepGoalTv)
+    TextView b30MineSleepGoalTv;
 
     private RequestPressent requestPressent;
 
     private AlertDialog.Builder builder;
+    //运动目标
+    ArrayList<String> sportGoalList;
+    //睡眠目标
+    ArrayList<String> sleepGoalList;
 
     @Nullable
     @Override
@@ -79,6 +93,25 @@ public class B30MineFragment extends LazyFragment implements RequestView {
         requestPressent = new RequestPressent();
         requestPressent.attach(this);
         getUserData();
+
+        sportGoalList = new ArrayList<>();
+        sleepGoalList = new ArrayList<>();
+        for (int i = 1000; i <= 64000; i += 1000) {
+            sleepGoalList.add(i + "");
+        }
+
+        for(int i = 1;i<48;i++){
+            sleepGoalList.add(WatchUtils.mul(Double.valueOf(i),0.5)+"");
+        }
+
+        //显示运动目标和睡眠目标
+        int b30SportGoal = (int) SharedPreferencesUtils.getParam(getActivity(),"b30Goal",0);
+        b30MineSportGoalTv.setText(b30SportGoal+"");
+        //睡眠
+        String b30SleepGoal = (String) SharedPreferencesUtils.getParam(MyApp.getContext(),"b30SleepGoal","");
+        if(!WatchUtils.isEmpty(b30SleepGoal)){
+            b30MineSleepGoalTv.setText(b30SleepGoal+"");
+        }
     }
 
     private void getUserData() {
@@ -107,7 +140,8 @@ public class B30MineFragment extends LazyFragment implements RequestView {
         super.onResume();
         if (!getActivity().isFinishing()) {
             if (MyCommandManager.DEVICENAME != null) {
-                b30MineDeviceTv.setText("B30");
+                String bleMac = (String) SharedPreferencesUtils.readObject(MyApp.getContext(),"mylanmac");
+                b30MineDeviceTv.setText("B30  "+bleMac);
             } else {
                 b30MineDeviceTv.setText("未连接");
             }
@@ -125,28 +159,83 @@ public class B30MineFragment extends LazyFragment implements RequestView {
     }
 
     @OnClick({R.id.b30userImageHead, R.id.b30MineDeviceRel, R.id.b30MineSportRel,
-            R.id.b30MineSleepRel, R.id.b30MineUnitRel, R.id.b30MineAboutRel})
+            R.id.b30MineSleepRel, R.id.b30MineUnitRel, R.id.b30MineAboutRel, R.id.b30LogoutBtn})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.b30userImageHead: //头像
                 startActivity(new Intent(getActivity(), MyPersonalActivity.class));
                 break;
             case R.id.b30MineDeviceRel: //设备
-                startActivity(new Intent(getActivity(), B30DeviceActivity.class));
+                if (!getActivity().isFinishing()) {
+                    if (MyCommandManager.DEVICENAME != null) {
+                        startActivity(new Intent(getActivity(), B30DeviceActivity.class));
+                    } else {
+                        startActivity(new Intent(getActivity(),NewSearchActivity.class));
+                        getActivity().finish();
+                    }
+                }
+
                 break;
             case R.id.b30MineSportRel:  //运动目标
-
+                setSportGoal(); //设置运动目标
                 break;
             case R.id.b30MineSleepRel:  //睡眠目标
-
+                setSleepGoal(); //设置睡眠目标
                 break;
             case R.id.b30MineUnitRel:   //单位设置
-               showUnitDialog();
+                showUnitDialog();
                 break;
             case R.id.b30MineAboutRel:  //关于
 
                 break;
+            case R.id.b30LogoutBtn: //退出登录
+
+                break;
         }
+    }
+
+    //设置运动目标
+    private void setSportGoal() {
+        ProfessionPick dailyumberofstepsPopWin = new ProfessionPick.Builder(getActivity() ,
+                new ProfessionPick.OnProCityPickedListener() {
+            @Override
+            public void onProCityPickCompleted(String profession) {
+                b30MineSportGoalTv.setText(profession);
+                SharedPreferencesUtils.setParam(getActivity(),"b30Goal",Integer.valueOf(profession.trim()));
+            }
+        }).textConfirm(getResources().getString(R.string.confirm)) //text of confirm button
+                .textCancel(getResources().getString(R.string.cancle)) //text of cancel button
+                .btnTextSize(16) // button text size
+                .viewTextSize(25) // pick view text size
+                .colorCancel(Color.parseColor("#999999")) //color of cancel button
+                .colorConfirm(Color.parseColor("#009900"))//color of confirm button
+                .setProvinceList(sleepGoalList) //min year in loop
+                .dateChose("8000") // date chose when init popwindow
+                .build();
+        dailyumberofstepsPopWin.showPopWin(getActivity());
+    }
+
+    //设置睡眠目标
+    private void setSleepGoal() {
+
+
+        ProfessionPick dailyumberofstepsPopWin = new ProfessionPick.Builder(getActivity() ,
+                new ProfessionPick.OnProCityPickedListener() {
+                    @Override
+                    public void onProCityPickCompleted(String profession) {
+                        b30MineSleepGoalTv.setText(profession );
+                        SharedPreferencesUtils.setParam(getActivity(),"b30SleepGoal",profession.trim());
+                    }
+                }).textConfirm(getResources().getString(R.string.confirm)) //text of confirm button
+                .textCancel(getResources().getString(R.string.cancle)) //text of cancel button
+                .btnTextSize(16) // button text size
+                .viewTextSize(25) // pick view text size
+                .colorCancel(Color.parseColor("#999999")) //color of cancel button
+                .colorConfirm(Color.parseColor("#009900"))//color of confirm button
+                .setProvinceList(sleepGoalList) //min year in loop
+                .dateChose("8.0") // date chose when init popwindow
+                .build();
+        dailyumberofstepsPopWin.showPopWin(getActivity());
     }
 
     //展示公英制

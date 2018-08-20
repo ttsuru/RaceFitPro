@@ -58,10 +58,14 @@ public class B30CusBloadView extends View {
     //当前时间的宽度
     private float mTimeCurrentWidth;
 
+    private float mTxtCurrentWidth;
+
     //时间点
     private ArrayList<String> timeList = new ArrayList<>();
     //点的集合
     private List<Map<Integer,Integer>> mapList = new ArrayList<>();
+
+    private String[] timeStr = new String[]{"00:00","03:00","06:00","09:00","12:00","15:00","18:00","21:00","23:59"};
 
     public B30CusBloadView(Context context) {
         super(context);
@@ -120,6 +124,7 @@ public class B30CusBloadView extends View {
 
         horiPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         horiPaint.setStrokeWidth(2f);
+        highPaint.setColor(Color.WHITE);
         horiPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 
     }
@@ -148,14 +153,17 @@ public class B30CusBloadView extends View {
             mTimeCurrentWidth = width/timeList.size();
             Log.e(TAG,"---mTimeCurrentWidth-"+mTimeCurrentWidth);
         }
+        mTxtCurrentWidth = width/timeStr.length;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        canvas.translate(0,getHeight());
+        canvas.save();
         Log.e(TAG,"-----onDraw----");
         //绘制横线
-        //drawHorizonLin(canvas);
+        drawHorizonLin(canvas);
         //绘制日期
         drawTimeLin(canvas);
         //绘制点
@@ -173,7 +181,7 @@ public class B30CusBloadView extends View {
 
     private void drawEmptyTxt(Canvas canvas) {
         if(mapList == null || mapList.size()==0){
-            canvas.translate(getWidth()/2,getHeight()/2);
+            canvas.translate(getWidth()/2,-getHeight()/2);
             canvas.drawText("No Data",0,0,emptyPaint);
         }
     }
@@ -189,13 +197,13 @@ public class B30CusBloadView extends View {
                     Log.e(TAG,"-----高低-="+mps.toString());
                     Log.e(TAG,"-----宽度222="+getWidth()/mapList.size());
                     //绘制低压的点
-                    canvas.drawCircle(i * getWidth()/mapList.size() + 10,mps.getKey()+100,mCirRadio,lowPaint);
+                    canvas.drawCircle(i * getWidth()/mapList.size() + 10,-mps.getKey()-100,mCirRadio,lowPaint);
                     //绘制高压的点
-                    canvas.drawCircle( i* getWidth()/mapList.size() + 10,mps.getValue() + 100,mCirRadio,highPaint);
+                    canvas.drawCircle( i* getWidth()/mapList.size() + 10,-mps.getValue()-100 ,mCirRadio,highPaint);
                     //绘制连线
                     Path path = new Path();
-                    path.moveTo(i * getWidth()/mapList.size() + 10,mps.getKey()+100);
-                    path.lineTo(i * getWidth()/mapList.size() + 10,mps.getValue() + 100);
+                    path.moveTo(i * getWidth()/mapList.size() + 10,-mps.getKey()-100);
+                    path.lineTo(i * getWidth()/mapList.size() + 10,-mps.getValue()-100);
                     path.close();
                     canvas.drawPath(path,linPaint);
                 }
@@ -208,9 +216,16 @@ public class B30CusBloadView extends View {
     //绘制日期
     private void drawTimeLin(Canvas canvas) {
         if(timeList != null && timeList.size()>0){
-            for(int i = 0;i<timeList.size();i++){
-                canvas.drawText(timeList.get(i),i*getWidth()/timeList.size()+5,height-20,timePaint);
+            if(timeList.size()<=8){
+                for(int i = 0;i<timeList.size();i++){
+                  canvas.drawText(timeList.get(i),i*getWidth()/timeList.size()+5,-20,timePaint);
+                }
+            }else{
+                for(int j = 0;j<timeStr.length;j++){
+                    canvas.drawText(timeStr[j],mTxtCurrentWidth*j+40,-10,timePaint);
+                }
             }
+
         }
     }
 

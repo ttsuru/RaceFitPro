@@ -6,10 +6,6 @@
 
     <include layout="@layout/comment_b30_title_layout" />
 
-    <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,6 +21,7 @@
 
 
                 <TextView
+                    android:id="@+id/stepCurrDateTv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -41,7 +38,6 @@
                     android:layout_margin="5dp"
                     android:gravity="center"
                     android:textColor="@color/white"
-                    android:text="距离您的目标还需8200步"
                     android:textSize="18sp" />
 
                 <include layout="@layout/include_b30_barchart" />
@@ -65,6 +61,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:id="@+id/tv1"
                         android:layout_width="wrap_content"
                         android:text="@string/step"
                         android:layout_margin="3dp"
@@ -76,7 +73,7 @@
                     <TextView
                         android:id="@+id/countStepTv"
                         android:layout_width="wrap_content"
-                        android:text="5000"
+                        android:text="--"
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:layout_margin="3dp"
@@ -99,6 +96,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:id="@+id/tv2"
                         android:layout_width="wrap_content"
                         android:text="@string/mileage"
                         android:layout_margin="3dp"
@@ -110,7 +108,7 @@
                     <TextView
                         android:id="@+id/countDisTv"
                         android:layout_width="wrap_content"
-                        android:text="5000"
+                        android:text="--"
                         android:layout_margin="3dp"
                         android:layout_gravity="center"
                         android:gravity="center"
@@ -133,6 +131,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:id="@+id/tv3"
                         android:layout_width="wrap_content"
                         android:text="@string/calories"
                         android:layout_margin="3dp"
@@ -144,7 +143,7 @@
                     <TextView
                         android:id="@+id/countKcalTv"
                         android:layout_width="wrap_content"
-                        android:text="5000"
+                        android:text="--"
                         android:layout_margin="3dp"
                         android:layout_gravity="center"
                         android:gravity="center"
@@ -175,5 +174,5 @@
 
             </LinearLayout>
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
+
 </LinearLayout>

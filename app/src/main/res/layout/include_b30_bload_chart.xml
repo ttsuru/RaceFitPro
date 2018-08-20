@@ -75,7 +75,7 @@
         app:timeColor="#ffc27a"
         app:lowPointColor="#ffc27a"
         app:highPointColor="#ffc27a"
-        android:layout_height="200dp" />
+        android:layout_height="180dp" />
 
 
 </LinearLayout>

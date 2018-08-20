@@ -3,6 +3,7 @@ package com.example.bozhilun.android.b30.b30view;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
@@ -17,13 +18,17 @@ import com.example.bozhilun.android.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2018/8/1.
  */
 
 public class B30CusHeartView extends View {
+
+    private static final String TAG = "B30CusHeartView";
 
     //连线的paint
     private Paint linPain;
@@ -48,8 +53,14 @@ public class B30CusHeartView extends View {
      //心率数据集合
     private List<Integer> rateDataList;
 
-    private String[] timeStr = new String[]{"00:00","·","06:00","·","12:00","·","18:00","·","23:59"};
+    //无数据时显示No data 的画笔
+    private Paint emptyPaint;
+
+    private String[] timeStr = new String[]{"00:00","03:00","06:00","09:00","12:00","15:00","18:00","21:00","23:59"};
     private float txtCurrentWidth;
+    private List<Map<Float,Float>> listMap = new ArrayList<>();
+    private Path path;
+
 
     public B30CusHeartView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -64,7 +75,7 @@ public class B30CusHeartView extends View {
     private void initAttrs(Context context, AttributeSet attrs) {
         TypedArray typedArray  = context.obtainStyledAttributes(attrs, R.styleable.B30CusHeartView);
         if(typedArray != null){
-            height = typedArray.getDimension(R.styleable.B30CusHeartView_parentHeight,dp2px(200));
+            height = typedArray.getDimension(R.styleable.B30CusHeartView_parentHeight,dp2px(120));
             pointColor = typedArray.getColor(R.styleable.B30CusHeartView_pointColor,0);
             recfColor = typedArray.getColor(R.styleable.B30CusHeartView_recfColor,0);
             typedArray.recycle();
@@ -75,8 +86,8 @@ public class B30CusHeartView extends View {
     private void initPaint() {
         txtPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         txtPaint.setColor(pointColor);
-        txtPaint.setTextSize(16f);
-        txtPaint.setStrokeWidth(3);
+        txtPaint.setTextSize(20f);
+        txtPaint.setStrokeWidth(8f);
         txtPaint.setTextAlign(Paint.Align.CENTER);
 
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -86,13 +97,21 @@ public class B30CusHeartView extends View {
         paint.setAntiAlias(true);
 
         linPain = new Paint(Paint.ANTI_ALIAS_FLAG);
-        linPain.setStyle(Paint.Style.FILL_AND_STROKE);
-        linPain.setStrokeWidth(2f);
+        linPain.setStyle(Paint.Style.STROKE);
+        linPain.setColor(pointColor);
+        linPain.setStrokeWidth(3f);
 
         recfPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         recfPaint.setStrokeWidth(height-1);
         recfPaint.setColor(recfColor);
         recfPaint.setAntiAlias(true);
+
+        path = new Path();
+
+        emptyPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        emptyPaint.setStrokeWidth(5f);
+        emptyPaint.setColor(Color.parseColor("#88d785"));
+        emptyPaint.setAntiAlias(true);
 
     }
 
@@ -115,6 +134,10 @@ public class B30CusHeartView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        canvas.translate(0,getHeight());
+        canvas.save();
+        Log.e("HEART","---改变="+getHeight());
+        drawEmptyTxt(canvas);
         //画字
         if(rateDataList!= null && rateDataList.size()>0){
             float mWidth = (float) (width * 0.4 /2 + 5);
@@ -123,43 +146,55 @@ public class B30CusHeartView extends View {
             Log.e("HEART","-----mWidth="+mWidth);
             for(int i = 0;i<48;i++){
                 if(rateDataList.size()-1>=i){
-                    Log.e("HEART","-----value--="+rateDataList.get(i)+"--height="+i*mCurrentWidth+5);
+                    Log.e("HEART","-----value--="+rateDataList.get(i)+"--width="+i*mCurrentWidth+5);
                     if(rateDataList.get(i) != 0){
-                        canvas.drawCircle(i==0?5:i*mCurrentWidth+5,rateDataList.get(i)+200,pointRadio,paint);
-                    }else{
-                        canvas.drawCircle(i==0?5:i*mCurrentWidth+5,rateDataList.get(i)+200,-3,paint);
+                        canvas.drawCircle(i==0?5:i*mCurrentWidth+5,-rateDataList.get(i)-130,pointRadio,paint);
+                        float pointX = (i==0?5:i*mCurrentWidth+5);
+                        float porintY = (-rateDataList.get(i)-130);
+                        Map<Float,Float> tmpMap = new HashMap<>();
+                        tmpMap.put(pointX,porintY);
+                        listMap.add(tmpMap);
                     }
-//                    Path path = new Path();
-//                    float x = (i==0?5:i*mCurrentWidth+5);
-//                    float y = rateDataList.get(i)+200;
-//                    float x2 = (i<47?i+1*mCurrentWidth+5:i*mCurrentWidth+5);
-//                    float y2 = (i<47?rateDataList.get(i+1)+200:rateDataList.get(i)+200);
-//
-//                    Log.e("HEART","-----xy="+x+"y="+y+"-x2="+x2+"-y2="+y2);
-//                    path.moveTo(x,y);
-//                    path.lineTo(x2,y2);
-//                    path.close();
-//                    canvas.drawPath(path,linPain);
 
                 }
 
             }
 
+
+            for(int j = 0;j<listMap.size();j++){
+                Map<Float,Float> map = listMap.get(j);
+                for(Map.Entry<Float,Float> valueMap : map.entrySet()){
+                    float xValue = valueMap.getKey();
+                    float yValue = valueMap.getValue();
+                    Log.e(TAG,"----xValue="+xValue+"--yValue="+yValue);
+                    if(j == 0){
+                        path.moveTo(xValue,yValue);
+                    }else{
+                        path.lineTo(xValue,yValue);
+                    }
+
+                }
+            }
+
+            path.close();
+            canvas.drawPath(path,linPain);
             drawTimeText(canvas);
         }
 
 
     }
+    //绘制空数据时显示的文字
+    private void drawEmptyTxt(Canvas canvas){
+        if(rateDataList== null || rateDataList.size()<0){
+            canvas.drawText("No Data",getWidth()/2-40,-getHeight()/2,emptyPaint);
+        }
+    }
 
     //画字
     private void drawTimeText(Canvas canvas) {
-        //
-//        rectF = new RectF(0,10,getWidth()/3,height-10);
-//        canvas.drawRect(rectF,txtPaint);
-
         for(int i = 0;i<timeStr.length;i++){
 
-            canvas.drawText(timeStr[i],txtCurrentWidth*i+40,height-10,txtPaint);
+            canvas.drawText(timeStr[i],txtCurrentWidth*i+40,-10,txtPaint);
         }
     }
 

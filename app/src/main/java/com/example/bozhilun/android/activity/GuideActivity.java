@@ -69,6 +69,10 @@ public class GuideActivity extends BaseActivity {
         if(goalStep==0){
             SharedPreferencesUtils.setParam(MyApp.getContext(),"b30Goal",8000);
         }
+        String b30SleepGoal = (String) SharedPreferencesUtils.getParam(MyApp.getContext(),"b30SleepGoal","");
+        if(!WatchUtils.isEmpty(b30SleepGoal)){
+            SharedPreferencesUtils.setParam(MyApp.getContext(),"b30SleepGoal","8.0");
+        }
 
         //SharedPreferencesUtils.saveObject(MyApp.getContext(),"mylanya","W06X");
         String isFirst = (String) SharedPreferencesUtils.getParam(GuideActivity.this, "msgfirst", "");

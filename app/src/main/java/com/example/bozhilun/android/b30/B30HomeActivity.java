@@ -1,9 +1,11 @@
 package com.example.bozhilun.android.b30;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.view.KeyEvent;
 
 import com.example.bozhilun.android.B18I.b18imine.B18iMineFragment;
 import com.example.bozhilun.android.MyApp;
@@ -23,6 +25,8 @@ import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
 import com.veepoo.protocol.listener.base.IConnectResponse;
 import com.veepoo.protocol.listener.base.INotifyResponse;
+
+import org.litepal.tablemanager.Connector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +54,7 @@ public class B30HomeActivity extends WatchBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_b30_home);
         ButterKnife.bind(this);
+        SQLiteDatabase db = Connector.getDatabase();
 
         initViews();
 
@@ -89,5 +94,26 @@ public class B30HomeActivity extends WatchBaseActivity {
     protected void onResume() {
         super.onResume();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+        super.onBackPressed();
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // 过滤按键动作
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+            moveTaskToBack(true);
+
+        } else if (keyCode == KeyEvent.KEYCODE_MENU) {
+            moveTaskToBack(true);
+        } else if (keyCode == KeyEvent.KEYCODE_HOME) {
+            moveTaskToBack(true);
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

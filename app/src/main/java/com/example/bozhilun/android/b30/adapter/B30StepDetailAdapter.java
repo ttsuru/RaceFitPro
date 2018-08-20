@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.bozhilun.android.R;
 import com.veepoo.protocol.model.datas.HalfHourSportData;
+import com.veepoo.protocol.model.datas.OriginData;
+
 import java.util.List;
 
 /**
@@ -23,11 +25,13 @@ import java.util.List;
 public class B30StepDetailAdapter extends RecyclerView.Adapter<B30StepDetailAdapter.B30StepDetailViewHolder>{
 
     private Context mContext;
-    private List<HalfHourSportData> list;
+    private List<OriginData> list;
+    private int flagCode;
 
-    public B30StepDetailAdapter(Context mContext, List<HalfHourSportData> list) {
+    public B30StepDetailAdapter(Context mContext, List<OriginData> list,int code) {
         this.mContext = mContext;
         this.list = list;
+        this.flagCode = code;
     }
 
     @NonNull
@@ -38,10 +42,22 @@ public class B30StepDetailAdapter extends RecyclerView.Adapter<B30StepDetailAdap
         return holder;
     }
 
+    //{date='2018-08-17', allPackage=65, packageNumber=44, mTime=TimeData [2018-08-17 14:25:00],
+    // rateValue=77, sportValue=34, stepValue=0, highValue=0, lowValue=0, wear=63, tempOne=4, tempTwo=-1,
+    // calValue=0.0, disValue=0.0, calcType=2}
     @Override
     public void onBindViewHolder(@NonNull B30StepDetailViewHolder holder, int position) {
-        holder.timeTv.setText(list.get(position).getTime().getColck());
-        holder.kcalTv.setText("100");
+        //时间
+        holder.timeTv.setText(list.get(position).getmTime().getColck());
+
+        if(flagCode == 1){  //步数
+            holder.kcalTv.setText(list.get(position).getStepValue()+"");
+        }else if(flagCode == 2){    //里程
+            holder.kcalTv.setText(list.get(position).getDisValue()+"");
+        }else if(flagCode == 3){    //卡路里
+            holder.kcalTv.setText(list.get(position).getCalValue()+"");
+        }
+
     }
 
     @Override

@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/comment_b30_title_layout"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:background="#6174C0"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/sleepCurrDateTv"
+            android:layout_width="match_parent"
+            android:textColor="@color/white"
+            android:text="2018-8-16"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:padding="5dp"
+            android:layout_height="wrap_content" />
+
+
+
+        <RatingBar
+            android:id="@+id/detailSleepQuitRatingBar"
+            android:layout_width="match_parent"
+            android:numStars="5"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content" />
+
+        
+        <com.example.bozhilun.android.b30.b30view.B30CusSleepView
+            android:id="@+id/detailCusSleepView"
+            android:layout_width="match_parent"
+            android:layout_margin="15dp"
+            android:layout_height="150dp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:layout_width="20dp"
+                android:background="@drawable/history_sleep_grid_one"
+                android:layout_height="20dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textSize="20sp"
+                android:layout_marginLeft="15dp"
+                android:text="睡眠时长"
+                android:padding="3dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:layout_width="20dp"
+                android:background="@drawable/history_sleep_grid_two"
+                android:layout_height="20dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textSize="20sp"
+                android:text="苏醒次数"
+                android:layout_marginLeft="15dp"
+                android:padding="3dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_margin="5dp"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/detailAllSleepTv"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_marginLeft="15dp"
+            android:text="--"
+            android:textColor="#1C1C1C"
+            android:padding="3dp"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/detailAwakeNumTv"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_marginLeft="15dp"
+            android:text="--"
+            android:textColor="#1C1C1C"
+            android:padding="3dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/chang_white"/>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:layout_width="20dp"
+                android:background="@drawable/history_sleep_grid_three"
+                android:layout_height="20dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textSize="20sp"
+                android:layout_marginLeft="15dp"
+                android:text="入睡时间"
+                android:padding="3dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:layout_width="20dp"
+                android:background="@drawable/history_sleep_grid_four"
+                android:layout_height="20dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textSize="20sp"
+                android:text="苏醒时间"
+                android:layout_marginLeft="15dp"
+                android:padding="3dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_margin="5dp"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/detailStartSleepTv"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:layout_marginLeft="15dp"
+            android:text="--"
+            android:gravity="center"
+            android:textColor="#1C1C1C"
+            android:padding="3dp"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/detailAwakeTimeTv"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:layout_marginLeft="15dp"
+            android:text="--"
+            android:gravity="center"
+            android:textColor="#1C1C1C"
+            android:padding="3dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/chang_white"/>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_gravity="center"
+                android:background="@drawable/history_sleep_grid_five"
+                android:layout_height="20dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textSize="20sp"
+                android:layout_marginLeft="15dp"
+                android:text="深度睡眠"
+                android:padding="3dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_gravity="center"
+                android:background="@drawable/history_sleep_grid_six"
+                android:layout_height="20dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:textSize="20sp"
+                android:text="浅度睡眠"
+                android:layout_marginLeft="15dp"
+                android:padding="3dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_margin="5dp"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/detailDeepTv"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:layout_marginLeft="15dp"
+            android:text="--"
+            android:gravity="center"
+            android:textColor="#1C1C1C"
+            android:padding="3dp"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/detailHightSleepTv"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:layout_marginLeft="15dp"
+            android:text="--"
+            android:gravity="center"
+            android:textColor="#1C1C1C"
+            android:padding="3dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/chang_white"/>
+
+</LinearLayout>

@@ -1005,7 +1005,34 @@
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Base"/>
-
+        <!--测量血压界面-->
+        <activity android:name=".b30.ManualMeaureBloadActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Base"/>
+        <!--消息提醒界面-->
+        <activity android:name=".b30.B30MessAlertActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Base"/>
+        <!--转腕亮品设置页面-->
+        <activity android:name=".b30.B30TrunWristSetActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Base"/>
+        <!--开关设置-->
+        <activity android:name=".b30.B30SwitchSetActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Base"/>
+        <!--久坐提醒设置-->
+        <activity android:name=".b30.B30LongSitSetActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Base"/>
+        <!--界面风格设置-->
+        <activity android:name=".b30.B30ScreenStyleActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Base"/>
+        <!--睡眠详情页面-->
+        <activity android:name=".b30.B30SleepDetailActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Base"/>
 
         <!--B30连接状态的广播-->
         <receiver android:name=".b30.service.B30ConnStateReceiver">

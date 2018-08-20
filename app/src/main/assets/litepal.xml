@@ -8,5 +8,6 @@
         <mapping class="com.example.bozhilun.android.event.AlarmClock" />
         <mapping class="com.example.bozhilun.android.w30s.bean.W30SAlarmClockBean" />
         <mapping class="com.suchengkeji.android.w30sblelibrary.bean.W30S_AlarmInfo" />
+        <mapping class="com.example.bozhilun.android.b30.bean.B30Bean"/>
     </list>
 </litepal>  

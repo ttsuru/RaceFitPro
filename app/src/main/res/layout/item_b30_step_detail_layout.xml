@@ -20,7 +20,7 @@
 
     <ImageView
         android:id="@+id/itemB30StepDetailImg"
-        android:layout_width="0dp"
+        android:layout_width="35dp"
         android:layout_weight="1"
         android:textSize="18sp"
         android:src="@mipmap/item_step_small"
@@ -28,7 +28,7 @@
         android:padding="3dp"
         android:layout_gravity="center"
         android:gravity="center"
-        android:layout_height="wrap_content" />
+        android:layout_height="35dp" />
 
     <TextView
         android:id="@+id/itemB30StepDetailKcalTv"

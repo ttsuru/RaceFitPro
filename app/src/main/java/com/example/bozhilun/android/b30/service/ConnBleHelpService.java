@@ -4,6 +4,7 @@ package com.example.bozhilun.android.b30.service;
 import android.util.Log;
 import com.example.bozhilun.android.MyApp;
 import com.example.bozhilun.android.bean.UserInfoBean;
+import com.example.bozhilun.android.imagepicker.TempActivity;
 import com.example.bozhilun.android.siswatch.utils.WatchUtils;
 import com.example.bozhilun.android.util.SharedPreferencesUtils;
 import com.google.gson.Gson;
@@ -36,6 +37,9 @@ import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Administrator on 2018/7/26.
  */
@@ -59,6 +63,8 @@ public class ConnBleHelpService {
     //健康数据返回
     public ConnBleHealthDataListener connBleHealthDataListener;
 
+    private List<OriginData> originDataList = new ArrayList<>();
+
 
     public ConnBleHelpService() {
     }
@@ -80,6 +86,7 @@ public class ConnBleHelpService {
             @Override
             public void onFunctionSupportDataChange(FunctionDeviceSupportData functionDeviceSupportData) {
                 Log.e(TAG,"-----functionDeviceSupportData--="+functionDeviceSupportData.toString());
+                Log.e(TAG,"-----contactMsgLength="+functionDeviceSupportData.getContactMsgLength()+"--all="+functionDeviceSupportData.getAllMsgLength());
             }
         }, new ISocialMsgDataListener() {
             @Override
@@ -118,6 +125,7 @@ public class ConnBleHelpService {
             String userBirthday = userInfoBean.getBirthday();
             int userAge = WatchUtils.getAgeFromBirthTime(userBirthday);
             Log.e(TAG,"----年龄="+userAge);
+            int sportGoal = (int) SharedPreferencesUtils.getParam(MyApp.getContext(),"b30Goal",0);
             MyApp.getVpOperateManager().syncPersonInfo(new IBleWriteResponse() {
                 @Override
                 public void onResponse(int i) {
@@ -134,7 +142,7 @@ public class ConnBleHelpService {
                         }
                     }
                 }
-            },new PersonInfoData(eSex,userHeight,userWeight,userAge,8000));
+            },new PersonInfoData(eSex,userHeight,userWeight,userAge,sportGoal));
         }
 
     }
@@ -169,38 +177,18 @@ public class ConnBleHelpService {
             }
         });
 
-        //读取睡眠数据
-        MyApp.getVpOperateManager().readSleepData(bleWriteResponse, new ISleepDataListener() {
-            @Override
-            public void onSleepDataChange(SleepData sleepData) {
-                Log.e(TAG,"----睡眠-sleepData="+sleepData.toString());
-            }
 
-            @Override
-            public void onSleepProgress(float v) {
-                Log.e(TAG,"----睡眠-onSleepProgress="+v);
-            }
-
-            @Override
-            public void onSleepProgressDetail(String s, int i) {
-                Log.e(TAG,"----睡眠-onSleepProgressDetail="+s+"---i="+i);
-            }
-
-            @Override
-            public void onReadSleepComplete() {
-                Log.e(TAG,"----睡眠-sleepData=");
-            }
-        },1 );
     }
 
-
+    //读取健康数据
     public void readHealthDaty(){
-
+        originDataList.clear();
         VPOperateManager.getMangerInstance(MyApp.getContext()).readOriginData(bleWriteResponse, new IOriginDataListener() {
             @Override
             public void onOringinFiveMinuteDataChange(OriginData originData) {
                 String message = "健康数据-返回:" + originData.toString();
                 Log.e(TAG,"----111="+message);
+                originDataList.add(originData);
             }
 
             @Override
@@ -223,10 +211,11 @@ public class ConnBleHelpService {
                 Log.e(TAG,"-----333="+message);
                 Log.e(TAG,"---是否相等="+tmpAllData+"-="+tmpCurrentData);
                 if(tmpAllData == tmpCurrentData){   //读取完了
-                    Log.e(TAG,"----完了="+originHalfHourData.toString());
+                    Log.e(TAG,"----完了="+new Gson().toJson(originHalfHourData));
                     if(connBleHealthDataListener != null){
-                        connBleHealthDataListener.getBleHealtyData(originHalfHourData);
+                        connBleHealthDataListener.getBleHealtyData(originHalfHourData,originDataList);
                     }
+                    readSleepData(3);
                 }
             }
 
@@ -235,9 +224,40 @@ public class ConnBleHelpService {
                 String message = "健康数据-读取结束";
 
             }
-        }, 1);
+        }, 3);
+
+
+
     }
 
+    //读取睡眠数据
+    public void readSleepData(int day){
+        //读取睡眠数据
+        MyApp.getVpOperateManager().readSleepData(bleWriteResponse, new ISleepDataListener() {
+            @Override
+            public void onSleepDataChange(SleepData sleepData) {
+                Log.e(TAG,"----睡眠-sleepData11="+sleepData.toString());
+                if(connBleHealthDataListener != null){
+                    connBleHealthDataListener.getBleSleepData(sleepData);
+                }
+            }
+
+            @Override
+            public void onSleepProgress(float v) {
+                Log.e(TAG,"----睡眠-onSleepProgress="+v);
+            }
+
+            @Override
+            public void onSleepProgressDetail(String s, int i) {
+                Log.e(TAG,"----睡眠-onSleepProgressDetail="+s+"---i="+i);
+            }
+
+            @Override
+            public void onReadSleepComplete() {
+                Log.e(TAG,"----睡眠-onReadSleepComplete");
+            }
+        },day );
+    }
 
     //设置密码回调
    public interface ConnBleHelpListener{
@@ -255,8 +275,8 @@ public class ConnBleHelpService {
 
     //健康数据返回回调
     public interface ConnBleHealthDataListener{
-        void getBleHealtyData(OriginHalfHourData originHalfHourData);
-
+        void getBleHealtyData(OriginHalfHourData originHalfHourData,List<OriginData> originData);
+        void getBleSleepData(SleepData sleepData);
     }
 
     public void setConnBleMsgDataListener(ConnBleMsgDataListener connBleMsgDataListener) {

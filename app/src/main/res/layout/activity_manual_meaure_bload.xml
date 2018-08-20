@@ -1,11 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
+    <include layout="@layout/comment_b30_title_layout"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1.5"
+        android:gravity="center"
+        android:background="#FF8E0D"
+        android:layout_height="0dp">
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+
+        </LinearLayout>
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:padding="8dp"
+            android:layout_height="220dp">
+
+            <ImageView
+                android:id="@+id/b30MeaurePlaceHolderImg"
+                android:layout_width="190dp"
+                android:layout_gravity="center"
+                android:background="@drawable/detect_bg"
+                android:layout_height="180dp" />
+
+            <com.example.bozhilun.android.b30.b30view.CustomCircleProgressBar
+                android:id="@+id/b30MeaureBloadProgressView"
+                android:layout_width="200dp"
+                android:visibility="gone"
+                android:layout_margin="5dp"
+                android:layout_gravity="center"
+                app:direction="top"
+                app:max_progress="100"
+                app:progress_text_color="@color/white"
+                app:outside_color="@color/colorPrimary"
+                app:outside_radius="90dp"
+                app:progress="0"
+                app:progress_width="8dp"
+                android:layout_height="200dp" />
+
+
+        </FrameLayout>
+
+
+
+        <TextView
+            android:id="@+id/showStateTv"
+            android:layout_width="match_parent"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:text=""
+            android:gravity="center"
+            android:layout_marginTop="15dp"
+            android:padding="5dp"
+            android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:layout_height="0dp">
+
+
+
+
+        <ImageView
+            android:id="@+id/b30MeaureStartImg"
+            android:layout_width="60dp"
+            android:background="@drawable/detect_bp_start"
+            android:layout_gravity="center|bottom"
+            android:layout_height="60dp" />
+
+
+
+    </LinearLayout>
 
 
 

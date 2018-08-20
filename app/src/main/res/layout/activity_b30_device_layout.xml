@@ -6,11 +6,6 @@
 
     <include layout="@layout/comment_b30_title_layout" />
 
-    <Button
-        android:id="@+id/b30DeviceDisconnBtn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="断开连接" />
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -27,13 +22,49 @@
             android:layout_marginRight="5dp"
             android:orientation="vertical">
 
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:background="@color/newwatchdatatvcolor"
+                android:layout_height="wrap_content">
+
+                <ImageView
+
+                    android:layout_width="wrap_content"
+                    android:background="@drawable/fgm_setting_watch"
+                    android:layout_height="wrap_content" />
+
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:textSize="18sp"
+                    android:textColor="@color/white"
+                    android:text="B30()"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content" />
+
+
+                <ImageView
+                    android:layout_width="65dp"
+                    android:background="@drawable/fgm_setting_battery_whith4"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="10dp"
+                    android:layout_height="45dp" />
+
+            </LinearLayout>
+
+
+
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
                 android:padding="3dp"
                 android:text="通知"
-
                 android:textSize="16sp" />
 
             <View
@@ -42,7 +73,7 @@
                 android:background="@color/chang_white" />
 
             <RelativeLayout
-                android:id="@+id/b30MineDeviceRel"
+                android:id="@+id/b30DeviceMsgRel"
                 style="@style/B30DeviceRelStyle">
 
                 <ImageView
@@ -75,6 +106,7 @@
                 android:background="@color/chang_white" />
 
             <RelativeLayout
+                android:id="@+id/b30DeviceAlarmRel"
                 style="@style/B30DeviceRelStyle">
 
                 <ImageView
@@ -106,6 +138,7 @@
                 android:background="@color/chang_white" />
 
             <RelativeLayout
+                android:id="@+id/b30DeviceLongSitRel"
                 style="@style/B30DeviceRelStyle">
 
                 <ImageView
@@ -122,7 +155,22 @@
                     android:layout_toRightOf="@+id/img3"
                     android:text="久坐设置" />
 
+
+                <ToggleButton
+                    android:id="@+id/longSitToggleBtn"
+                    android:layout_width="70dp"
+                    android:background="@drawable/toggle_select"
+                    android:textOn="@null"
+                    android:layout_toLeftOf="@+id/bs1img"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="3dp"
+                    android:textOff="@null"
+                    android:layout_height="40dp" />
+
+
+
                 <ImageView
+                    android:id="@+id/bs1img"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -137,6 +185,7 @@
                 android:background="@color/chang_white" />
 
             <RelativeLayout
+                android:id="@+id/b30DeviceWristRel"
                 style="@style/B30DeviceRelStyle">
 
                 <ImageView
@@ -153,7 +202,21 @@
                     android:layout_toRightOf="@+id/img4"
                     android:text="翻腕亮屏" />
 
+
+                <ToggleButton
+                    android:id="@+id/turnWristToggleBtn"
+                    android:layout_width="70dp"
+                    android:background="@drawable/toggle_select"
+                    android:textOn="@null"
+                    android:layout_toLeftOf="@+id/bs2img"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="3dp"
+                    android:textOff="@null"
+                    android:layout_height="40dp" />
+
+
                 <ImageView
+                    android:id="@+id/bs2img"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -179,38 +242,10 @@
                 android:layout_height="1dp"
                 android:background="@color/chang_white" />
 
-            <RelativeLayout
-                style="@style/B30DeviceRelStyle">
 
-                <ImageView
-                    android:id="@+id/img5"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
-                    android:background="@drawable/connect_success_pair" />
-
-
-                <TextView
-                    style="@style/B30DeviceStyle"
-                    android:layout_toRightOf="@+id/img5"
-                    android:text="绑定设备" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/fgm_fitness_arrow_left" />
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/chang_white" />
 
             <RelativeLayout
+                android:id="@+id/b30DevicePrivateBloadRel"
                 style="@style/B30DeviceRelStyle">
 
                 <ImageView
@@ -227,7 +262,20 @@
                     android:layout_toRightOf="@+id/img6"
                     android:text="血压私人模式" />
 
+
+                <ToggleButton
+                    android:id="@+id/privateBloadToggleBtn"
+                    android:layout_width="70dp"
+                    android:background="@drawable/toggle_select"
+                    android:textOn="@null"
+                    android:layout_toLeftOf="@+id/bs4img"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="3dp"
+                    android:textOff="@null"
+                    android:layout_height="40dp" />
+
                 <ImageView
+                    android:id="@+id/bs4img"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
@@ -242,6 +290,7 @@
                 android:background="@color/chang_white" />
 
             <RelativeLayout
+                android:id="@+id/b30DeviceSwitchRel"
                 style="@style/B30DeviceRelStyle">
 
                 <ImageView
@@ -274,6 +323,7 @@
                 android:background="@color/chang_white" />
 
             <RelativeLayout
+                android:id="@+id/b30DevicePtoRel"
                 style="@style/B30DeviceRelStyle">
 
                 <ImageView
@@ -306,6 +356,7 @@
                 android:background="@color/chang_white" />
 
             <RelativeLayout
+                android:id="@+id/b30DeviceCounDownRel"
                 style="@style/B30DeviceRelStyle">
 
                 <ImageView
@@ -338,6 +389,7 @@
                 android:background="@color/chang_white" />
 
             <RelativeLayout
+                android:id="@+id/b30DeviceResetRel"
                 style="@style/B30DeviceRelStyle">
 
                 <ImageView
@@ -352,7 +404,6 @@
                 <TextView
                     style="@style/B30DeviceStyle"
                     android:layout_toRightOf="@+id/img10"
-
                     android:text="重置设备密码" />
 
                 <ImageView
@@ -371,6 +422,7 @@
 
 
             <RelativeLayout
+                android:id="@+id/b30DeviceStyleRel"
                 style="@style/B30DeviceRelStyle">
 
                 <ImageView
@@ -403,6 +455,7 @@
                 android:background="@color/chang_white" />
 
             <RelativeLayout
+                android:id="@+id/b30DevicedfuRel"
                 style="@style/B30DeviceRelStyle">
 
                 <ImageView
@@ -436,6 +489,7 @@
 
 
             <RelativeLayout
+                android:id="@+id/b30DeviceClearDataRel"
                 style="@style/B30DeviceRelStyle">
 
                 <ImageView
@@ -466,6 +520,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/chang_white" />
+
+            <Button
+                android:id="@+id/b30DisConnBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:textColor="@color/white"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/login_selector"
+                android:text="断开连接" />
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

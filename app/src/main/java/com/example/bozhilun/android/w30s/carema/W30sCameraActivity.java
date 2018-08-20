@@ -26,13 +26,18 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.example.bozhilun.android.MyApp;
 import com.example.bozhilun.android.R;
+import com.example.bozhilun.android.bleutil.MyCommandManager;
 import com.example.bozhilun.android.siswatch.WatchBaseActivity;
 import com.example.bozhilun.android.siswatch.utils.WatchUtils;
 import com.example.bozhilun.android.w30s.activity.W30sAlbumActivity;
 import com.example.bozhilun.android.w30s.utils.CameraUtils;
 import com.suchengkeji.android.w30sblelibrary.W30SBLEServices;
 import com.suchengkeji.android.w30sblelibrary.utils.SharedPreferenceUtil;
+import com.veepoo.protocol.listener.base.IBleWriteResponse;
+import com.veepoo.protocol.listener.data.ICameraDataListener;
+import com.veepoo.protocol.operate.CameraOperater;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -191,7 +196,30 @@ public class W30sCameraActivity extends WatchBaseActivity implements View.OnClic
         viewHeight = mScreenWidth / 2;
         //startCamera();
 
+
+        if(MyCommandManager.DEVICENAME != null && MyCommandManager.DEVICENAME.equals("B30")){
+            MyApp.getVpOperateManager().startCamera(iBleWriteResponse, new ICameraDataListener() {
+                @Override
+                public void OnCameraDataChange(CameraOperater.COStatus coStatus) {
+                    if(coStatus == CameraOperater.COStatus.TAKEPHOTO_CAN){  //拍照
+                        if (isShow) {
+                            if (isShowCamera) {
+                                takePhonePic();
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
     }
+
+    private IBleWriteResponse iBleWriteResponse = new IBleWriteResponse() {
+        @Override
+        public void onResponse(int i) {
+
+        }
+    };
 
     @Override
     protected void onStart() {
@@ -295,6 +323,15 @@ public class W30sCameraActivity extends WatchBaseActivity implements View.OnClic
         Log.e(TAG,"-----onDestroy---");
         isShow = false;
         releaseCamera();
+        //退出拍照模式
+        if(MyCommandManager.DEVICENAME != null && MyCommandManager.DEVICENAME.equals("B30")){
+            MyApp.getVpOperateManager().stopCamera(iBleWriteResponse, new ICameraDataListener() {
+                @Override
+                public void OnCameraDataChange(CameraOperater.COStatus coStatus) {
+
+                }
+            });
+        }
     }
 
     @Override

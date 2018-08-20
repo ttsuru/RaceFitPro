@@ -23,6 +23,10 @@ import com.sdk.bluetooth.protocol.command.push.MsgCountPush;
 import com.sdk.bluetooth.protocol.command.push.SocialPush;
 import com.suchengkeji.android.w30sblelibrary.W30SBLEManage;
 import com.suchengkeji.android.w30sblelibrary.utils.SharedPreferenceUtil;
+import com.veepoo.protocol.listener.base.IBleWriteResponse;
+import com.veepoo.protocol.model.enums.ESocailMsg;
+import com.veepoo.protocol.model.settings.ContentSetting;
+import com.veepoo.protocol.model.settings.ContentSocailSetting;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -117,6 +121,9 @@ public class AlertService extends MyNotificationListenerService {
 //                }
                     //过滤包名
                     if (packageName.equals(QQ_PACKAGENAME)) {
+                        sendB30Msg(ESocailMsg.QQ,"QQ",h9Msg);
+
+
                         try {
                             if (MyCommandManager.DEVICENAME != null) {
                                 if (MyCommandManager.DEVICENAME.equals("W30")) {
@@ -137,6 +144,7 @@ public class AlertService extends MyNotificationListenerService {
                         }
                         // 微信
                     } else if (packageName.equals(WECHAT_PACKAGENAME)) {
+                        sendB30Msg(ESocailMsg.WECHAT,"Wechat",h9Msg);
                         if (MyCommandManager.DEVICENAME != null) {
                             try {
                                 if (MyCommandManager.DEVICENAME.equals("W30")) {
@@ -159,6 +167,7 @@ public class AlertService extends MyNotificationListenerService {
                     }
                     //facebook
                     else if (packageName.equals(FACEBOOK_PACKAGENAME)) {
+                        sendB30Msg(ESocailMsg.FACEBOOK,"FaceBook",h9Msg);
                         if (MyCommandManager.DEVICENAME != null) {
                             try {
                                 if (MyCommandManager.DEVICENAME.equals("W30")) {
@@ -181,6 +190,7 @@ public class AlertService extends MyNotificationListenerService {
                     }
                     //Twitter
                     else if (packageName.equals(TWITTER_PACKAGENAME)) {
+                        sendB30Msg(ESocailMsg.TWITTER,"Twitter",h9Msg);
                         if (MyCommandManager.DEVICENAME != null) {
                             try {
                                 if (MyCommandManager.DEVICENAME.equals("W30")) {
@@ -203,7 +213,7 @@ public class AlertService extends MyNotificationListenerService {
                     }
                     //Whats
                     else if (packageName.equals(WHATS_PACKAGENAME)) {
-
+                        sendB30Msg(ESocailMsg.WHATS,"Whats",h9Msg);
                         if (MyCommandManager.DEVICENAME != null) {
                             try {
                                 if (MyCommandManager.DEVICENAME.equals("W30")) {
@@ -225,7 +235,7 @@ public class AlertService extends MyNotificationListenerService {
                         }
                     }    //Instagram
                     else if (packageName.equals(INSTANRAM_PACKAGENAME)) {
-
+                        sendB30Msg(ESocailMsg.INSTAGRAM,"Instagram",h9Msg);
                         if (MyCommandManager.DEVICENAME != null) {
                             try {
                                 if (MyCommandManager.DEVICENAME.equals("W30")) {
@@ -248,6 +258,7 @@ public class AlertService extends MyNotificationListenerService {
                     }
                     //viber
                     else if (packageName.equals(VIBER_PACKAGENAME)) {
+                       // sendB30Msg(ESocailMsg.);
                         if (MyCommandManager.DEVICENAME != null) {
                             try {
                                 if (MyCommandManager.DEVICENAME.equals("W30")) {
@@ -284,7 +295,7 @@ public class AlertService extends MyNotificationListenerService {
 
                         }
                     } else if (packageName.equals(MSG_PACKAGENAME) || packageName.equals(SAMSUNG_MSG_PACKNAME) || packageName.equals(SAMSUNG_MSG_SRVERPCKNAME)) {
-
+                        sendB30Msg(ESocailMsg.SMS,"MSG",h9Msg);
                         if (MyCommandManager.DEVICENAME != null) {
                             try {
                                 if (MyCommandManager.DEVICENAME.equals("W30")) {
@@ -316,7 +327,7 @@ public class AlertService extends MyNotificationListenerService {
 
                         }
                     } else if (packageName.equals(SKYPE_PACKAGENAME) || packageName.equals(SKYPE_PACKNAME)) {
-
+                        sendB30Msg(ESocailMsg.SKYPE,"Skype",h9Msg);
                         if (MyCommandManager.DEVICENAME != null) {
                             try {
                                 if (MyCommandManager.DEVICENAME.equals("W30")) {
@@ -334,13 +345,16 @@ public class AlertService extends MyNotificationListenerService {
                 }
             }
 
-
-
         }catch (Exception exception){
             exception.getMessage();
         }
 
+    }
 
+    //推送B30的消息提醒
+    private void sendB30Msg(ESocailMsg b30msg,String appName,String context) {
+        ContentSetting contentSetting = new ContentSocailSetting(b30msg,0,20,appName,context);
+        MyApp.getVpOperateManager().sendSocialMsgContent(iBleWriteResponse,contentSetting);
     }
 
 
@@ -719,4 +733,11 @@ public class AlertService extends MyNotificationListenerService {
             MyApp.getmW30SBLEManage().notifacePhone(h9Msg, type);
         }
     }
+
+    private IBleWriteResponse iBleWriteResponse = new IBleWriteResponse() {
+        @Override
+        public void onResponse(int i) {
+
+        }
+    };
 }

@@ -68,13 +68,13 @@
    <com.example.bozhilun.android.b30.b30view.B30CusHeartView
        android:id="@+id/b30HomeHeartChart"
        android:layout_width="match_parent"
-        app:parentHeight="200dp"
+        app:parentHeight="180dp"
        app:pointColor="#61d9f5"
        app:recfColor="#DCEDF5"
        android:paddingRight="5dp"
        android:paddingLeft="5dp"
        android:padding="3dp"
-       android:layout_height="200dp" />
+       android:layout_height="180dp" />
 
     <LinearLayout
         android:layout_width="match_parent"

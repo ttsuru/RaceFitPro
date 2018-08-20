@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.bozhilun.android.R;
 
@@ -34,6 +35,7 @@ public abstract class BaseFragment extends Fragment {
     private View rootView;
 
     private Dialog dialog;
+
 
 
     //setUserVisibleHint()在Fragment创建时会先被调用一次，传入isVisibleToUser = false
@@ -193,4 +195,5 @@ public abstract class BaseFragment extends Fragment {
             }
         }
     }
+
 }

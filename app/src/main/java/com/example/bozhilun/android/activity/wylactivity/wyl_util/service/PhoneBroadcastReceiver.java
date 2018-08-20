@@ -10,7 +10,6 @@ import android.provider.ContactsContract;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.example.bozhilun.android.MyApp;
 import com.example.bozhilun.android.activity.GuideActivity;
 import com.example.bozhilun.android.siswatch.utils.WatchUtils;
@@ -21,7 +20,10 @@ import com.sdk.bluetooth.protocol.command.push.MsgCountPush;
 import com.sdk.bluetooth.protocol.command.push.PhoneNamePush;
 import com.sdk.bluetooth.utils.BackgroundThread;
 import com.suchengkeji.android.w30sblelibrary.utils.SharedPreferenceUtil;
-
+import com.veepoo.protocol.listener.base.IBleWriteResponse;
+import com.veepoo.protocol.model.enums.ESocailMsg;
+import com.veepoo.protocol.model.settings.ContentPhoneSetting;
+import com.veepoo.protocol.model.settings.ContentSetting;
 import java.util.ArrayList;
 
 /**
@@ -94,9 +96,12 @@ public class PhoneBroadcastReceiver extends BroadcastReceiver {
                     if(!WatchUtils.isEmpty(phoneNumber)){
                         boolean isOn = (boolean) SharedPreferenceUtil.get(MyApp.getApplication(),"w30sswitch_Phone",true);
                         if(isOn){
-                            sendPhoneAlertData(phoneNumber);
+                            sendPhoneAlertData(phoneNumber,"W30");
                         }
                     }
+                }
+                if(bleName != null && bleName.equals("B30")){   //B30手环
+                    sendPhoneAlertData(phoneNumber,"B30");
                 }
                 break;
             case TelephonyManager.CALL_STATE_IDLE:// "[Broadcast]挂断电话
@@ -122,8 +127,8 @@ public class PhoneBroadcastReceiver extends BroadcastReceiver {
     }
 
     //发送电话号码
-    private void sendPhoneAlertData(String phoneNumber) {
-        getPhoneContacts(phoneNumber);
+    private void sendPhoneAlertData(String phoneNumber,String tag) {
+        getPhoneContacts(phoneNumber,tag);
     }
 
     private void disW30Phone(){
@@ -286,7 +291,7 @@ public class PhoneBroadcastReceiver extends BroadcastReceiver {
     private static final int PHONES_CONTACT_ID_INDEX = 3;
     boolean isPhone = true;
     /**得到手机通讯录联系人信息**/
-    private void getPhoneContacts(String pName) {
+    private void getPhoneContacts(String pName,String tag) {
 
         Log.e(TAG,"----pname-="+pName);
         ContentResolver resolver = MyApp.getApplication().getContentResolver();
@@ -308,7 +313,12 @@ public class PhoneBroadcastReceiver extends BroadcastReceiver {
                         isPhone = false;
                         String contactNames = phoneCursor.getString(PHONES_DISPLAY_NAME_INDEX)+"";
                         Log.e(TAG,"-----相等---="+contactNames);
-                        MyApp.getmW30SBLEManage().notifacePhone(contactNames,0x01);
+                        if(tag.equals("B30")){
+                            setB30PhoneMsg(contactNames);
+                        }else if(tag.equals("W30")){
+                            MyApp.getmW30SBLEManage().notifacePhone(contactNames,0x01);
+                        }
+
                         return;
                     }
                 }
@@ -319,13 +329,35 @@ public class PhoneBroadcastReceiver extends BroadcastReceiver {
 
             }
             if(isPhone){
-                MyApp.getmW30SBLEManage().notifacePhone(pName,0x01);
+                if(tag.equals("B30")){
+                    setB30PhoneMsg("");
+                }else if(tag.equals("W30")){
+                    MyApp.getmW30SBLEManage().notifacePhone(pName,0x01);
+                }
+
             }
 
             phoneCursor.close();
         }else{
-            MyApp.getmW30SBLEManage().notifacePhone(pName,0x01);
+            if(tag.equals("B30")){
+                setB30PhoneMsg("");
+            }else if(tag.equals("W30")){
+                MyApp.getmW30SBLEManage().notifacePhone(pName,0x01);
+            }
+           // MyApp.getmW30SBLEManage().notifacePhone(pName,0x01);
         }
     }
+
+    private void setB30PhoneMsg(String peopleName){
+        ContentSetting contentSetting = new ContentPhoneSetting(ESocailMsg.PHONE,0,4,peopleName,phoneNumber);
+        MyApp.getVpOperateManager().sendSocialMsgContent(iBleWriteResponse,contentSetting);
+    }
+
+    private IBleWriteResponse iBleWriteResponse = new IBleWriteResponse() {
+        @Override
+        public void onResponse(int i) {
+
+        }
+    };
 
 }

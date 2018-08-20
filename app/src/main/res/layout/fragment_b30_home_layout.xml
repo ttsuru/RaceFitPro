@@ -19,9 +19,14 @@
         android:layout_height="1dp"
         android:background="@color/white"/>
 
-    <android.support.v4.widget.NestedScrollView
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/b30HomeSwipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_marginBottom="61dp"
+        android:layout_height="wrap_content">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <LinearLayout
         android:layout_width="match_parent"
@@ -176,7 +181,7 @@
         <!--运动图表-->
         <include layout="@layout/include_b30_barchart"/>
         <!--睡眠图表-->
-        <include layout="@layout/include_b30_sleep_chart"/>
+        <include layout="@layout/include_b30_sleep_view_layout"/>
         <!--心率图表-->
         <include layout="@layout/include_b30_heart_chart"/>
         <!--血压图表-->
@@ -186,5 +191,5 @@
 
     </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
-
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

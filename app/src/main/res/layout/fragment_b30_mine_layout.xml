@@ -135,7 +135,7 @@
                     <TextView
                         android:id="@+id/b30MineSportGoalTv"
                         android:layout_width="wrap_content"
-                        android:text="9000"
+                        android:text=""
                         android:layout_toLeftOf="@+id/ig1"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="10dp"
@@ -166,7 +166,7 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_centerVertical="true"
-                        android:background="@drawable/fgm_setting_activity" />
+                        android:background="@drawable/fgm_setting_sleep" />
 
 
                     <TextView
@@ -291,9 +291,11 @@
 
 
                 <Button
+                    android:id="@+id/b30LogoutBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="25dp"
+                    android:layout_margin="25dp"
+                    android:background="@drawable/login_selector"
                     android:text="退出登录" />
 
 

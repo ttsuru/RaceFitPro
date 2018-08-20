@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.example.bozhilun.android.R;
@@ -22,6 +23,9 @@ public class CusHeartSchedulView extends View {
     private Paint paint;
     private int countColor;
     private int currentColor;
+    private float heartViewHeight;
+
+    private Paint currPaint;
 
     private int height;
     private int width;
@@ -41,6 +45,7 @@ public class CusHeartSchedulView extends View {
         if(typedArray != null){
             countColor = typedArray.getColor(R.styleable.CusHeartSchedulView_countColor,0);
             currentColor = typedArray.getColor(R.styleable.CusHeartSchedulView_currentColor,0);
+            heartViewHeight = typedArray.getDimension(R.styleable.CusHeartSchedulView_heartViewHeight,DimenUtil.dp2px(context,40));
             typedArray.recycle();
         }
         initPaint();
@@ -50,15 +55,22 @@ public class CusHeartSchedulView extends View {
     private void initPaint() {
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setAntiAlias(true);
-        paint.setStrokeWidth(8f);
-        paint.setColor(currentColor);
+        paint.setStrokeWidth(heartViewHeight);
+        paint.setColor(countColor);
+
+        currPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        currPaint.setAntiAlias(true);
+        currPaint.setStrokeWidth(heartViewHeight);
+        currPaint.setColor(currentColor);
 
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
+        height = getHeight();
+        width = getWidth();
+        Log.e("11111","-----111="+height+"--w="+width+"---h="+getMeasuredHeight()+"--w="+getMeasuredWidth());
     }
 
     @Override
@@ -66,12 +78,16 @@ public class CusHeartSchedulView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         height = getHeight();
         width = getWidth();
+        Log.e("111","-----heartViewHeight="+heartViewHeight+"--height="+height);
 
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawLine(0,0,getWidth()-80,height,paint);
+        //绘制总的进度
+        canvas.drawLine(0,heartViewHeight,getWidth(),heartViewHeight,paint);
+        //绘制当前进度
+        canvas.drawLine(0,heartViewHeight,getWidth()-80,heartViewHeight,currPaint);
     }
 }

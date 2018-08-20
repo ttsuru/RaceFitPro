@@ -3,6 +3,7 @@ package com.example.bozhilun.android.b30;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,8 +16,10 @@ import android.widget.TextView;
 
 import com.example.bozhilun.android.R;
 import com.example.bozhilun.android.b30.adapter.B30StepDetailAdapter;
+import com.example.bozhilun.android.b30.bean.B30Bean;
 import com.example.bozhilun.android.siswatch.WatchBaseActivity;
 import com.example.bozhilun.android.siswatch.utils.WatchConstants;
+import com.example.bozhilun.android.siswatch.utils.WatchUtils;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -24,12 +27,16 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.veepoo.protocol.model.datas.HalfHourSportData;
+import com.veepoo.protocol.model.datas.OriginData;
+import com.veepoo.protocol.model.datas.SportData;
 import com.veepoo.protocol.model.datas.TimeData;
 
+import org.litepal.crud.DataSupport;
+
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,12 +69,29 @@ public class B30StepDetailActivity extends WatchBaseActivity {
     LinearLayout b30SportChartLin;
     @BindView(R.id.b30StepDetailRecyclerView)
     RecyclerView b30StepDetailRecyclerView;
+    @BindView(R.id.countStepTv)
+    TextView countStepTv;
+    @BindView(R.id.countDisTv)
+    TextView countDisTv;
+    @BindView(R.id.countKcalTv)
+    TextView countKcalTv;
+    @BindView(R.id.tv1)
+    TextView tv1;
+    @BindView(R.id.tv2)
+    TextView tv2;
+    @BindView(R.id.tv3)
+    TextView tv3;
+    @BindView(R.id.stepCurrDateTv)
+    TextView stepCurrDateTv;
 
-    private List<HalfHourSportData> list;
+    private List<OriginData> list;
     private B30StepDetailAdapter b30StepDetailAdapter;
 
     //步数数据
     List<BarEntry> b30ChartList;
+
+    B30Bean b30Bean;
+    private int flagCode = 1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,14 +100,72 @@ public class B30StepDetailActivity extends WatchBaseActivity {
         ButterKnife.bind(this);
 
         initViews();
+        //显示汇总数据
+        b30Bean = DataSupport.find(B30Bean.class, 1);
         initData();
+
+        showData();
+
+    }
+
+    private void showData() {
+
+        Log.e(TAG, "----bean=" + b30Bean.toString());
+        if (b30Bean != null) {
+            String sportStr = b30Bean.getSportDataStr();
+            Log.e(TAG, "----sportStr=" + sportStr);
+            if (sportStr != null) {
+                SportData sportData = new Gson().fromJson(sportStr, SportData.class);
+                Log.e(TAG, "-----sportData=" + sportData.toString());
+                if (sportData != null) {
+                    countStepTv.setText(sportData.getStep() + "");
+                    countDisTv.setText(sportData.getDis() + "");
+                    countKcalTv.setText(sportData.getKcal() + "");
+                }
+            }
+
+        }
+        clearStyleData(0);
+        showSportDetail(1);
+
+    }
+
+    private void showSportDetail(int code) {
+        if (b30Bean != null) {
+            String originDataStr = b30Bean.getOriginDataStr();
+            Log.e(TAG, "-----originDataStr=" + originDataStr);
+            if (originDataStr != null) {
+                List<OriginData> tmpList = new Gson().fromJson(originDataStr, new TypeToken<List<OriginData>>() {
+                }.getType());
+                if (tmpList != null && tmpList.size() > 0) {
+                    list.clear();
+                    switch (code) {
+                        case 1: //步数
+                            flagCode = 1;
+                            break;
+                        case 2: //里程
+                            flagCode = 2;
+                            break;
+                        case 3: //卡路里
+                            flagCode = 3;
+                            break;
+                        default:
+                            flagCode = 1;
+                            break;
+                    }
+                    list.clear();
+                    list.addAll(tmpList);
+                    b30StepDetailAdapter.notifyDataSetChanged();
+                }
+            }
+        }
 
     }
 
     private void initData() {
         b30ChartList = new ArrayList<>();
         List<HalfHourSportData> tmpList = WatchConstants.tmpSportList;
-        if (tmpList != null) {
+        if (tmpList != null && tmpList.size() > 0) {
             List<Map<String, Integer>> listMap = new ArrayList<>();
             int k = 0;
             for (int i = 0; i < 48; i++) {
@@ -111,21 +193,6 @@ public class B30StepDetailActivity extends WatchBaseActivity {
             }
             initBarChart(b30ChartList);
             b30BarChart.invalidate();
-
-
-
-            Collections.sort(tmpList, new Comparator<HalfHourSportData>() {
-                @Override
-                public int compare(HalfHourSportData o1, HalfHourSportData o2) {
-                    return o2.getTime().getColck().compareTo(o1.getTime().getColck());
-                }
-            });
-
-
-            list.addAll(tmpList);
-            b30StepDetailAdapter.notifyDataSetChanged();
-
-
         }
 
     }
@@ -136,13 +203,13 @@ public class B30StepDetailActivity extends WatchBaseActivity {
         commentB30ShareImg.setVisibility(View.VISIBLE);
         b30ChartTopRel.setVisibility(View.GONE);
         b30SportChartLin.setBackgroundColor(Color.parseColor("#2594EE"));
-
+        stepCurrDateTv.setText(WatchUtils.getCurrentDate());
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         b30StepDetailRecyclerView.setLayoutManager(layoutManager);
-        b30StepDetailRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        b30StepDetailRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         list = new ArrayList<>();
-        b30StepDetailAdapter = new B30StepDetailAdapter(this, list);
+        b30StepDetailAdapter = new B30StepDetailAdapter(this, list, flagCode);
         b30StepDetailRecyclerView.setAdapter(b30StepDetailAdapter);
 
 
@@ -194,8 +261,48 @@ public class B30StepDetailActivity extends WatchBaseActivity {
 
     }
 
-    @OnClick(R.id.commentB30BackImg)
-    public void onViewClicked() {
-        finish();
+
+    @OnClick({R.id.commentB30BackImg, R.id.stepDetailStepLin, R.id.stepDetailDisLin, R.id.stepDetailKcalLin})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.commentB30BackImg:
+                finish();
+                break;
+            case R.id.stepDetailStepLin:
+                clearStyleData(0);
+                showSportDetail(1);
+                break;
+            case R.id.stepDetailDisLin:
+                clearStyleData(1);
+                showSportDetail(2);
+                break;
+            case R.id.stepDetailKcalLin:
+                clearStyleData(2);
+                showSportDetail(3);
+                break;
+        }
+    }
+
+    private void clearStyleData(int txtCode) {
+        tv1.setTextColor(ContextCompat.getColor(this, R.color.txt_color));
+        tv2.setTextColor(ContextCompat.getColor(this, R.color.txt_color));
+        tv3.setTextColor(ContextCompat.getColor(this, R.color.txt_color));
+        countStepTv.setTextColor(ContextCompat.getColor(this, R.color.txt_color));
+        countDisTv.setTextColor(ContextCompat.getColor(this, R.color.txt_color));
+        countKcalTv.setTextColor(ContextCompat.getColor(this, R.color.txt_color));
+        switch (txtCode) {
+            case 0:
+                tv1.setTextColor(ContextCompat.getColor(this, R.color.new_deep_colorAccent));
+                countStepTv.setTextColor(ContextCompat.getColor(this, R.color.new_deep_colorAccent));
+                break;
+            case 1:
+                tv2.setTextColor(ContextCompat.getColor(this, R.color.new_deep_colorAccent));
+                countDisTv.setTextColor(ContextCompat.getColor(this, R.color.new_deep_colorAccent));
+                break;
+            case 2:
+                tv3.setTextColor(ContextCompat.getColor(this, R.color.new_deep_colorAccent));
+                countKcalTv.setTextColor(ContextCompat.getColor(this, R.color.new_deep_colorAccent));
+                break;
+        }
     }
 }

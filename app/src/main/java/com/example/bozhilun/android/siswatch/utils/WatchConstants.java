@@ -3,12 +3,17 @@ package com.example.bozhilun.android.siswatch.utils;
 import android.util.Log;
 
 import com.example.bozhilun.android.MyApp;
+import com.example.bozhilun.android.bean.HeartRate;
 import com.example.bozhilun.android.siswatch.bean.CustomBlueDevice;
 import com.example.bozhilun.android.util.SharedPreferencesUtils;
+import com.veepoo.protocol.model.datas.HalfHourBpData;
+import com.veepoo.protocol.model.datas.HalfHourRateData;
 import com.veepoo.protocol.model.datas.HalfHourSportData;
+import com.veepoo.protocol.model.datas.SleepData;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2017/7/18.
@@ -186,6 +191,11 @@ public class WatchConstants {
 
     //用于临时保存b30手环步数的集合
     public static List<HalfHourSportData> tmpSportList = null;
+    public static List<HalfHourRateData> tmpHeartList = null;
+    public static List<Integer> tmpSleepList = null;
+    public static SleepData tmpSleepData = null;
+    public static List<HalfHourBpData> tmpBloadList = null;
+    public static List<Map<Integer, Integer>> tmpListMap = null;
     //是否是搜索进入主界面的 w30
     public static boolean isScanConn = false;
 
