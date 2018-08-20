@@ -1,6 +1,7 @@
 package com.example.bozhilun.android.b30.service;
 
 import android.annotation.SuppressLint;
+import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -8,10 +9,14 @@ import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.util.Log;
 import com.example.bozhilun.android.MyApp;
+import com.example.bozhilun.android.R;
 import com.example.bozhilun.android.bleutil.MyCommandManager;
 import com.example.bozhilun.android.imagepicker.TempActivity;
 import com.example.bozhilun.android.siswatch.NewSearchActivity;
@@ -27,7 +32,10 @@ import com.inuker.bluetooth.library.search.response.SearchResponse;
 import com.veepoo.protocol.listener.base.IABleConnectStatusListener;
 import com.veepoo.protocol.listener.base.IConnectResponse;
 import com.veepoo.protocol.listener.base.INotifyResponse;
+import com.veepoo.protocol.listener.data.IFindPhonelistener;
 import com.veepoo.protocol.model.datas.OriginHalfHourData;
+
+import java.io.IOException;
 
 import static com.suchengkeji.android.w30sblelibrary.utils.W30SBleUtils.isOtaConn;
 
@@ -48,6 +56,9 @@ public class B30ConnStateReceiver extends BroadcastReceiver {
     private String bleMac;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothClient bluetoothClient;
+    //震动
+    private Vibrator mVibrator;
+    private MediaPlayer mMediaPlayer;
 
     public B30ConnStateListener b30ConnStateListener;
 
@@ -213,7 +224,7 @@ public class B30ConnStateReceiver extends BroadcastReceiver {
             switch (state){
                 case Constants.STATUS_CONNECTED:    //已连接
                     Log.e(TAG,"-----监听--conn");
-
+                    findPhoneListenerData();
                     break;
                 case Constants.STATUS_DISCONNECTED: //已断开
                     Log.e(TAG,"-----监听--disconn");
@@ -225,4 +236,35 @@ public class B30ConnStateReceiver extends BroadcastReceiver {
             }
         }
     };
+
+    //监听查找手机
+    private void findPhoneListenerData() {
+        MyApp.getVpOperateManager().settingFindPhoneListener(new IFindPhonelistener() {
+            @Override
+            public void findPhone() {
+                try{
+                    mVibrator = (Vibrator) MyApp.getContext().getSystemService(Service.VIBRATOR_SERVICE);
+                    mMediaPlayer = new MediaPlayer();
+                    AssetFileDescriptor file = MyApp.getContext().getResources().openRawResourceFd(R.raw.music);
+                    try {
+                        mMediaPlayer.setDataSource(file.getFileDescriptor(), file.getStartOffset(),
+                                file.getLength());
+                        mMediaPlayer.prepare();
+                        file.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    mMediaPlayer.setVolume(0.5f, 0.5f);
+                    mMediaPlayer.setLooping(false);
+                    mMediaPlayer.start();
+                    if (mVibrator.hasVibrator()) {
+                        //想设置震动大小可以通过改变pattern来设定，如果开启时间太短，震动效果可能感觉不到
+                        mVibrator.vibrate(new long[]{500, 1000, 500, 1000}, -1);//查找手机是调用系统震动
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 }
