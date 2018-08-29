@@ -18,7 +18,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
@@ -86,11 +86,11 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <supports-screens
-        android:xlargeScreens="true"
+        android:anyDensity="true"
         android:largeScreens="true"
         android:normalScreens="true"
         android:smallScreens="true"
-        android:anyDensity="true"/>
+        android:xlargeScreens="true" />
 
     <!--  android:debuggable="true"
         android:vmSafeMode="true"
@@ -100,28 +100,28 @@
         android:hardwareAccelerated="true"-->
     <application
         android:name=".MyApp"
-        android:debuggable="true"
-        android:vmSafeMode="true"
-        android:largeHeap="true"
         android:allowBackup="true"
         android:allowClearUserData="true"
+        android:debuggable="true"
         android:hardwareAccelerated="true"
         android:icon="${app_icon}"
         android:label="${app_name}"
+        android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="android:label"
-        tools:ignore="HardcodedDebugMode">
+        android:vmSafeMode="true"
+        tools:ignore="HardcodedDebugMode"
+        tools:replace="android:label">
 
-      <!--  <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
-        </provider>-->
+        <!--  <provider
+              android:name="android.support.v4.content.FileProvider"
+              android:authorities="${applicationId}.provider"
+              android:exported="false"
+              android:grantUriPermissions="true">
+              <meta-data
+                  android:name="android.support.FILE_PROVIDER_PATHS"
+                  android:resource="@xml/provider_paths" />
+          </provider>-->
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
@@ -137,7 +137,7 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-       <!--Google地图-->
+        <!--Google地图-->
 
         <!-- meta-data兼容低版本 -->
         <!-- <meta-data -->
@@ -173,8 +173,20 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <!-- <activity
+             android:name=".activity.GuideActivity"
+             android:configChanges="keyboardHidden|orientation|screenSize|navigation|keyboard"
+             android:theme="@style/AppTheme.NoActionBar">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+
+                 <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
+         </activity>-->
+
+        <!--新的引导页和欢迎页-->
         <activity
-            android:name=".activity.GuideActivity"
+            android:name=".activity.LaunchActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|navigation|keyboard"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -183,6 +195,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!--欢迎页面-->
+        <activity
+            android:name=".activity.NewGuidActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden" />
+
         <activity
             android:name=".activity.HelpActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -224,18 +243,18 @@
             android:name=".activity.wylactivity.MapRecordActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
-<!--        <activity
-            android:name=".activity.HeathActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+        <!--        <activity
+                    android:name=".activity.HeathActivity"
+                    android:theme="@style/AppTheme.NoActionBar" />
 
-        &lt;!&ndash; 心率测量&ndash;&gt;
-        <activity
-            android:name=".activity.HeartRateTestActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        &lt;!&ndash;血压测量 &ndash;&gt;
-        <activity
-            android:name=".activity.BloodpressureTestActivity"
-            android:theme="@style/AppTheme.NoActionBar" />-->
+                &lt;!&ndash; 心率测量&ndash;&gt;
+                <activity
+                    android:name=".activity.HeartRateTestActivity"
+                    android:theme="@style/AppTheme.NoActionBar" />
+                &lt;!&ndash;血压测量 &ndash;&gt;
+                <activity
+                    android:name=".activity.BloodpressureTestActivity"
+                    android:theme="@style/AppTheme.NoActionBar" />-->
 
 
         <!--微信-->
@@ -244,7 +263,7 @@
             android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:theme="@android:style/Theme.Translucent"  />
+            android:theme="@android:style/Theme.Translucent" />
 
         <activity
             android:name=".activity.LoginActivity"
@@ -335,7 +354,7 @@
             android:name=".imagepicker.TempActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/AppTheme.Base" />
 
         <!-- 新浪微博网页授权登录相关配置 -->
 
@@ -367,7 +386,7 @@
             android:name="com.tencent.connect.common.AssistActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/AppTheme.Base" />
 
         <activity
             android:name="com.tencent.tauth.AuthActivity"
@@ -388,26 +407,26 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Base" />
 
-      <!--  <receiver android:name=".imagepicker.BootBroadcastReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".imagepicker.AlarmClockProcessReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.kaku.weac.AlarmClockOff" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".imagepicker.WakeReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.kaku.weac.wake.gray" />
-            </intent-filter>
-        </receiver>-->
+        <!--  <receiver android:name=".imagepicker.BootBroadcastReceiver">
+              <intent-filter>
+                  <action android:name="android.intent.action.BOOT_COMPLETED" />
+              </intent-filter>
+          </receiver>
+          <receiver
+              android:name=".imagepicker.AlarmClockProcessReceiver"
+              android:exported="false">
+              <intent-filter>
+                  <action android:name="com.kaku.weac.AlarmClockOff" />
+              </intent-filter>
+          </receiver>
+          <receiver
+              android:name=".imagepicker.WakeReceiver"
+              android:enabled="true"
+              android:exported="false">
+              <intent-filter>
+                  <action android:name="com.kaku.weac.wake.gray" />
+              </intent-filter>
+          </receiver>-->
         <!-- 电话广播 -->
         <receiver android:name=".activity.wylactivity.wyl_util.service.PhoneBroadcastReceiver">
             <intent-filter>
@@ -762,11 +781,11 @@
         <activity
             android:name=".w30s.W30SHomeActivity"
             android:configChanges="keyboard"
+            android:hardwareAccelerated="false"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:hardwareAccelerated="false"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -956,14 +975,16 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
 
-        <activity android:name=".w30s.ota.W30OTAActivity"
+        <activity
+            android:name=".w30s.ota.W30OTAActivity"
             android:configChanges="keyboard"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
         <!--隐私介绍-->
-        <activity android:name=".view.PrivacyActivity"
+        <activity
+            android:name=".view.PrivacyActivity"
             android:configChanges="keyboard"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -971,7 +992,8 @@
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
 
         <!--B30界面-->
-        <activity android:name=".b30.B30HomeActivity"
+        <activity
+            android:name=".b30.B30HomeActivity"
             android:configChanges="keyboard"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -979,72 +1001,107 @@
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
 
         <!--步数详情页面-->
-        <activity android:name=".b30.B30StepDetailActivity"
+        <activity
+            android:name=".b30.B30StepDetailActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/AppTheme.Base" />
         <!--心率详情界面-->
-        <activity android:name=".b30.B30HeartDetailActivity"
+        <activity
+            android:name=".b30.B30HeartDetailActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/AppTheme.Base" />
         <!--血压详情界面-->
-        <activity android:name=".b30.B30BloadDetailActivity"
+        <activity
+            android:name=".b30.B30BloadDetailActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/AppTheme.Base" />
 
         <!--手动测量心率界面-->
-        <activity android:name=".b30.ManualMeaureHeartActivity"
+        <activity
+            android:name=".b30.ManualMeaureHeartActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/AppTheme.Base" />
 
         <!--设备界面-->
-        <activity android:name=".b30.B30DeviceActivity"
+        <activity
+            android:name=".b30.B30DeviceActivity"
             android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/AppTheme.Base" />
         <!--测量血压界面-->
-        <activity android:name=".b30.ManualMeaureBloadActivity"
+        <activity
+            android:name=".b30.ManualMeaureBloadActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/AppTheme.Base" />
         <!--消息提醒界面-->
-        <activity android:name=".b30.B30MessAlertActivity"
+        <activity
+            android:name=".b30.B30MessAlertActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/AppTheme.Base" />
         <!--转腕亮品设置页面-->
-        <activity android:name=".b30.B30TrunWristSetActivity"
+        <activity
+            android:name=".b30.B30TrunWristSetActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/AppTheme.Base" />
         <!--开关设置-->
-        <activity android:name=".b30.B30SwitchSetActivity"
+        <activity
+            android:name=".b30.B30SwitchSetActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/AppTheme.Base" />
         <!--久坐提醒设置-->
-        <activity android:name=".b30.B30LongSitSetActivity"
+        <activity
+            android:name=".b30.B30LongSitSetActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/AppTheme.Base" />
         <!--界面风格设置-->
-        <activity android:name=".b30.B30ScreenStyleActivity"
+        <activity
+            android:name=".b30.B30ScreenStyleActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/AppTheme.Base" />
         <!--睡眠详情页面-->
-        <activity android:name=".b30.B30SleepDetailActivity"
+        <activity
+            android:name=".b30.B30SleepDetailActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Base"/>
+            android:theme="@style/AppTheme.Base" />
+        <!--私人血压设置-->
+        <activity
+            android:name=".b30.PrivateBloadActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Base" />
 
-        <!--B30连接状态的广播-->
-        <receiver android:name=".b30.service.B30ConnStateReceiver">
-            <intent-filter>
-                <action android:name="com.example.bozhilun.android.b30.connected"/>
-                <action android:name="com.example.bozhilun.android.b30.disconnected"/>
-                <action android:name="android.bluetooth.adapter.action.STATE_CHANGED"/>
-            </intent-filter>
-        </receiver>
+        <!--系统设置-->
+        <activity
+            android:name=".b30.B30SysSettingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Base" />
+        <!--固件升级-->
+        <activity
+            android:name=".b30.B30DufActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Base" />
+        <!--重置设备密码-->
+        <activity
+            android:name=".b30.B30ResetActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Base" />
+
+
+        <service android:name=".b30.service.B30ConnStateService" />
+        <!-- &lt;!&ndash;B30连接状态的广播&ndash;&gt;
+         <receiver android:name=".b30.service.B30ConnStateReceiver">
+             <intent-filter>
+                 <action android:name="com.example.bozhilun.android.b30.connected"/>
+                 <action android:name="com.example.bozhilun.android.b30.disconnected"/>
+                 <action android:name="android.bluetooth.adapter.action.STATE_CHANGED"/>
+             </intent-filter>
+         </receiver>-->
 
         <!--下载的serveir-->
-        <service android:name=".siswatch.utils.DownloadService"/>
+        <service android:name=".siswatch.utils.DownloadService" />
 
     </application>
 

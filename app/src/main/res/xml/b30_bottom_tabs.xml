@@ -7,6 +7,11 @@
         title="@string/recording" />
 
     <tab
+        icon="@drawable/draw_data_item"
+        id="@+id/b30_tab_data"
+        title="@string/data" />
+
+    <tab
         icon="@mipmap/paobu_icon_sel"
         id="@+id/b30_tab_set"
         title="@string/running" />

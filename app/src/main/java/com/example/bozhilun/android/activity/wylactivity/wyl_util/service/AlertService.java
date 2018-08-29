@@ -6,7 +6,6 @@ import android.os.Build;
 import android.service.notification.StatusBarNotification;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.example.bozhilun.android.B18I.b18imonitor.B18iResultCallBack;
 import com.example.bozhilun.android.B18I.b18iutils.B18iUtils;
 import com.example.bozhilun.android.MyApp;
@@ -27,9 +26,7 @@ import com.veepoo.protocol.listener.base.IBleWriteResponse;
 import com.veepoo.protocol.model.enums.ESocailMsg;
 import com.veepoo.protocol.model.settings.ContentSetting;
 import com.veepoo.protocol.model.settings.ContentSocailSetting;
-
 import org.greenrobot.eventbus.EventBus;
-
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -103,22 +100,19 @@ public class AlertService extends MyNotificationListenerService {
                 if (!WatchUtils.isEmpty(msgCont) && !msgCont.equals("[]")) {
                     Log.e(TAG, "-------tickerText----" + tickerText);
                     String h9Msg = "";
-                    if (msgCont.length() >=2){
-                        h9Msg = msgCont.substring(1, msgCont.length() - 1);    //去掉[]
-                    }else {
-                        h9Msg = msgCont;
-                    }
+//                    if (msgCont.length() >=2){
+//                        h9Msg = msgCont.substring(1, msgCont.length() - 1);    //去掉[]
+//                    }else {
+//                        h9Msg = msgCont;
+//                    }
+                    h9Msg = msgCont;
                     Log.e(TAG, "-------newmsg----" + h9Msg);
                     String w30SBleName = (String) SharedPreferenceUtil.get(MyApp.getApplication(), "mylanya", "");
                     if (!WatchUtils.isEmpty(w30SBleName) && w30SBleName.equals("W30")) {
                         h9Msg = msgCont;    //去掉[]
                     }
                     Log.e(TAG, "-------newmsg--2--" + h9Msg);
-//                if (newmsg.length() > 16) {
-//                    newmsg = h9Msg.substring(0, 16);
-//                } else {
-//                    newmsg = h9Msg + "....";
-//                }
+
                     //过滤包名
                     if (packageName.equals(QQ_PACKAGENAME)) {
                         sendB30Msg(ESocailMsg.QQ,"QQ",h9Msg);
@@ -353,7 +347,7 @@ public class AlertService extends MyNotificationListenerService {
 
     //推送B30的消息提醒
     private void sendB30Msg(ESocailMsg b30msg,String appName,String context) {
-        ContentSetting contentSetting = new ContentSocailSetting(b30msg,0,20,appName,context);
+        ContentSetting contentSetting = new ContentSocailSetting(b30msg,0,20,"",context);
         MyApp.getVpOperateManager().sendSocialMsgContent(iBleWriteResponse,contentSetting);
     }
 

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <include layout="@layout/comment_b30_title_layout"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_margin="5dp"
+        android:padding="3dp"
+        android:text="您设置的私人血压模式,以获取更精准的数据,此处您需要设置的是未服用降压药的有效血压值。"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_marginTop="15dp"
+        android:padding="3dp"
+        android:layout_marginLeft="15dp"
+        android:text="请选择私人血压模式数据，私人血压模式只针对个人有效，他人请选择通用模式"
+        android:layout_height="wrap_content" />
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_height="wrap_content">
+
+
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="150dp"/>
+
+        <com.example.bozhilun.android.b30.view.StringScrollPicker
+            android:id="@+id/hightBloadView"
+            android:layout_width="80dp"
+            android:layout_height="200dp"
+            app:spv_center_item_background="#22888888"
+            app:spv_disallow_intercept_touch="true"
+            app:spv_max_text_size="30dp"
+            app:spv_min_text_size="24dp"
+            app:spv_visible_item_count="5"/>
+
+
+
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="150dp"/>
+
+
+
+        <com.example.bozhilun.android.b30.view.StringScrollPicker
+            android:id="@+id/lowBloadView"
+            android:layout_width="80dp"
+            android:layout_height="200dp"
+            app:spv_center_item_background="#22888888"
+            app:spv_disallow_intercept_touch="true"
+            app:spv_max_text_size="30dp"
+            app:spv_min_text_size="24dp"
+            app:spv_visible_item_count="5"/>
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="150dp"/>
+
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/b30SetPrivateBloadBtn"
+        android:layout_width="match_parent"
+        android:text="保存"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:background="@drawable/login_selector"
+        android:layout_marginTop="25dp"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

@@ -273,7 +273,7 @@
                     <TextView
                         style="@style/B30DeviceStyle"
                         android:layout_toRightOf="@+id/img5"
-                        android:text="关于我们" />
+                        android:text="系统设置" />
 
                     <ImageView
                         android:layout_width="wrap_content"

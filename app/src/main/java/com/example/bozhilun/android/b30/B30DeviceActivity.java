@@ -27,11 +27,15 @@ import com.example.bozhilun.android.siswatch.utils.WatchUtils;
 import com.example.bozhilun.android.util.SharedPreferencesUtils;
 import com.example.bozhilun.android.w30s.carema.W30sCameraActivity;
 import com.veepoo.protocol.listener.base.IBleWriteResponse;
+import com.veepoo.protocol.listener.data.IBPSettingDataListener;
 import com.veepoo.protocol.listener.data.ICameraDataListener;
 import com.veepoo.protocol.listener.data.ILongSeatDataListener;
 import com.veepoo.protocol.listener.data.INightTurnWristeDataListener;
+import com.veepoo.protocol.model.datas.BpSettingData;
 import com.veepoo.protocol.model.datas.LongSeatData;
 import com.veepoo.protocol.model.datas.NightTurnWristeData;
+import com.veepoo.protocol.model.enums.EBPDetectModel;
+import com.veepoo.protocol.model.settings.BpSetting;
 import com.veepoo.protocol.model.settings.LongSeatSetting;
 import com.veepoo.protocol.operate.CameraOperater;
 import com.veepoo.protocol.operate.LongSeatOperater;
@@ -96,7 +100,21 @@ public class B30DeviceActivity extends WatchBaseActivity {
             MyApp.getVpOperateManager().readNightTurnWriste(iBleWriteResponse, new INightTurnWristeDataListener() {
                 @Override
                 public void onNightTurnWristeDataChange(NightTurnWristeData nightTurnWristeData) {
+                    Log.e(TAG,"----转腕亮屏="+nightTurnWristeData.toString());
                     turnWristToggleBtn.setChecked(nightTurnWristeData.isNightTureWirsteStatusOpen());
+                }
+            });
+
+            //读取私人血压
+            MyApp.getVpOperateManager().readDetectBP(iBleWriteResponse, new IBPSettingDataListener() {
+                @Override
+                public void onDataChange(BpSettingData bpSettingData) {
+                    Log.e(TAG,"---读取私人血压="+bpSettingData.toString());
+                    if(bpSettingData.getModel() == EBPDetectModel.DETECT_MODEL_PRIVATE){
+                        privateBloadToggleBtn.setChecked(true);
+                    }else{
+                        privateBloadToggleBtn.setChecked(false);
+                    }
                 }
             });
         }
@@ -134,7 +152,7 @@ public class B30DeviceActivity extends WatchBaseActivity {
                 startActivity(B30TrunWristSetActivity.class);
                 break;
             case R.id.b30DevicePrivateBloadRel: //血压私人模式
-
+                startActivity(PrivateBloadActivity.class);
                 break;
             case R.id.b30DeviceSwitchRel:   //开关设置
                 startActivity(B30SwitchSetActivity.class);
@@ -166,13 +184,13 @@ public class B30DeviceActivity extends WatchBaseActivity {
 
                 break;
             case R.id.b30DeviceResetRel:    //重置设备密码
-
+                startActivity(B30ResetActivity.class);
                 break;
             case R.id.b30DeviceStyleRel:    //主题风格
                 startActivity(B30ScreenStyleActivity.class);
                 break;
             case R.id.b30DevicedfuRel:  //固件升级
-
+                startActivity(B30DufActivity.class);
                 break;
             case R.id.b30DeviceClearDataRel:    //清除数据
                 new MaterialDialog.Builder(this)
@@ -247,6 +265,17 @@ public class B30DeviceActivity extends WatchBaseActivity {
                         setNightTurnWriste(isChecked);
                         break;
                     case R.id.privateBloadToggleBtn:    //血压私人模式
+                        boolean isPrivateBload = isChecked;
+                        boolean isAngioAdjuste = false;
+                        BpSetting bpSetting = new BpSetting(isPrivateBload, 111, 88);
+                        bpSetting.setAngioAdjuste(isAngioAdjuste);
+
+                        MyApp.getVpOperateManager().settingDetectBP(iBleWriteResponse, new IBPSettingDataListener() {
+                            @Override
+                            public void onDataChange(BpSettingData bpSettingData) {
+                                Log.e(TAG,"----设置私人血压模式="+bpSettingData.toString());
+                            }
+                        }, bpSetting);
 
                         break;
 

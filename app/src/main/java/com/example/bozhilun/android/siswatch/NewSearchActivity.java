@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,7 +31,6 @@ import com.example.bozhilun.android.MyApp;
 import com.example.bozhilun.android.R;
 import com.example.bozhilun.android.activity.LoginActivity;
 import com.example.bozhilun.android.b30.B30HomeActivity;
-import com.example.bozhilun.android.b30.service.B30ConnStateReceiver;
 import com.example.bozhilun.android.b30.service.ConnBleHelpService;
 import com.example.bozhilun.android.bleutil.MyCommandManager;
 import com.example.bozhilun.android.h9.H9HomeActivity;
@@ -63,12 +63,12 @@ import com.veepoo.protocol.model.datas.FunctionSocailMsgData;
 import com.veepoo.protocol.model.datas.PwdData;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import javax.security.auth.login.LoginException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -153,6 +153,7 @@ public class NewSearchActivity extends GetUserInfoActivity implements CustomBlue
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.e(TAG,"-------onCreate----");
         setContentView(R.layout.activity_search_device);
         ButterKnife.bind(this);
 
@@ -187,8 +188,7 @@ public class NewSearchActivity extends GetUserInfoActivity implements CustomBlue
             if (!serviceRunning) {
                 MyApp.getmW30SBLEManage().openW30SBLEServices();
             }
-            //注册扫描蓝牙设备的广播
-            registerReceiver(broadcastReceiver, BlueAdapterUtils.getBlueAdapterUtils(NewSearchActivity.this).scanIntFilter()); //注册广播
+
             if (customDeviceList != null)
                 customDeviceList.clear();
             if (customBlueAdapter != null)
@@ -310,7 +310,6 @@ public class NewSearchActivity extends GetUserInfoActivity implements CustomBlue
     private BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] scanRecord) {
-             Log.e(TAG, "------扫描返回----" + bluetoothDevice.getName() + "-" + bluetoothDevice.getAddress()+"--scanRecord="+ Arrays.toString(scanRecord));
             String bleName = bluetoothDevice.getName();
             String bleMac = bluetoothDevice.getAddress(); //bozlun
             if (!WatchUtils.isEmpty(bleName) && bleName.length() >= 3) {//bleName.equals(B15P_BLENAME) || || bleName.substring(0,4).equals(B18I_BLENAME) //|| bleName.equals(B30_NAME)
@@ -338,6 +337,9 @@ public class NewSearchActivity extends GetUserInfoActivity implements CustomBlue
     };
 
     private void initViews() {
+        //注册扫描蓝牙设备的广播
+        registerReceiver(broadcastReceiver,BlueAdapterUtils.getBlueAdapterUtils(NewSearchActivity.this).scanIntFilter()); //注册广播
+
         HidUtil.instance = null;
         //跑马灯效果
         searchAlertTv.setSelected(true);
@@ -446,29 +448,29 @@ public class NewSearchActivity extends GetUserInfoActivity implements CustomBlue
     //连接B30手环
     private void connectB30(final String b30Mac) {
         showLoadingDialog("connect...");
-        B30ConnStateReceiver b30ConnStateReceiver = new B30ConnStateReceiver();
-        b30ConnStateReceiver.OnB30ConnBle(b30Mac);
-        b30ConnStateReceiver.setB30ConnStateListener(new B30ConnStateReceiver.B30ConnStateListener() {
-            @Override
-            public void onB30Connect() {
-                closeLoadingDialog();
-                Log.e(TAG,"----onnn");
-//                MyCommandManager.DEVICENAME = "B30";
-//                MyCommandManager.ADDRESS = b30Mac;
-//                SharedPreferencesUtils.saveObject(NewSearchActivity.this, "mylanya", "B30");
-//                SharedPreferencesUtils.saveObject(NewSearchActivity.this, "mylanmac", b30Mac);
-                isScanConn = true;
-                startActivity(B30HomeActivity.class);
-                finish();
-            }
+        MyApp.getB30ConnStateService().connB30ConnBle(b30Mac);
 
-            @Override
-            public void onB30Disconn() {
-                closeLoadingDialog();
-                Log.e(TAG,"----disonnn");
-                ToastUtil.showToast(NewSearchActivity.this,"conn failed");
-            }
-        });
+
+//        B30ConnStateReceiver b30ConnStateReceiver = new B30ConnStateReceiver();
+//        b30ConnStateReceiver.OnB30ConnBle(b30Mac);
+//        b30ConnStateReceiver.setB30ConnStateListener(new B30ConnStateReceiver.B30ConnStateListener() {
+//            @Override
+//            public void onB30Connect() {
+//                closeLoadingDialog();
+//                Log.e(TAG,"----onnn回调---");
+//                isScanConn = true;
+//                startActivity(B30HomeActivity.class);
+//                NewSearchActivity.this.finish();
+//                Log.e(TAG,"-----finish了----");
+//            }
+//
+//            @Override
+//            public void onB30Disconn() {
+//                closeLoadingDialog();
+//                Log.e(TAG,"----disonnn");
+//                ToastUtil.showToast(NewSearchActivity.this,"conn failed");
+//            }
+ //       });
     }
 
 
@@ -624,6 +626,20 @@ public class NewSearchActivity extends GetUserInfoActivity implements CustomBlue
                     SharedPreferencesUtils.saveObject(NewSearchActivity.this,"mylanya","W30");
                     startActivity(new Intent(NewSearchActivity.this, W30SHomeActivity.class));
                     finish();
+                }
+
+                //B30手环
+                if(action.equals(WatchUtils.B30_CONNECTED_ACTION)){ //B30连接成功
+                    closeLoadingDialog();
+                    isScanConn = true;
+                    startActivity(B30HomeActivity.class);
+                    NewSearchActivity.this.finish();
+
+                }
+                //B30连接失败
+                if(action.equals(WatchUtils.B30_DISCONNECTED_ACTION)){
+                    closeLoadingDialog();
+                    ToastUtil.showShort(NewSearchActivity.this,"conn fail");
                 }
             }
         }

@@ -2,9 +2,9 @@ package com.example.bozhilun.android.b30.service;
 
 
 import android.util.Log;
+
 import com.example.bozhilun.android.MyApp;
 import com.example.bozhilun.android.bean.UserInfoBean;
-import com.example.bozhilun.android.imagepicker.TempActivity;
 import com.example.bozhilun.android.siswatch.utils.WatchUtils;
 import com.example.bozhilun.android.util.SharedPreferencesUtils;
 import com.google.gson.Gson;
@@ -32,11 +32,7 @@ import com.veepoo.protocol.model.datas.SportData;
 import com.veepoo.protocol.model.enums.ELanguage;
 import com.veepoo.protocol.model.enums.EOprateStauts;
 import com.veepoo.protocol.model.enums.ESex;
-
 import org.apache.commons.lang.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +43,7 @@ import java.util.List;
 public class ConnBleHelpService {
 
     private static final String TAG = "ConnBleHelpService";
-
+    private int count = 0;
 
     //总数
     int tmpAllData = 0;
@@ -66,11 +62,27 @@ public class ConnBleHelpService {
     private List<OriginData> originDataList = new ArrayList<>();
 
 
+    private static volatile ConnBleHelpService connBleHelpService;
+
     public ConnBleHelpService() {
+        count++;
+        Log.e(TAG,"----count="+count);
+    }
+
+    public static ConnBleHelpService getConnBleHelpService(){
+        if(connBleHelpService == null){
+            synchronized (ConnBleHelpService.class){
+                if(connBleHelpService == null){
+                    connBleHelpService = new ConnBleHelpService();
+                }
+            }
+        }
+        return connBleHelpService;
     }
 
 
     public void doConnOperater(){
+        String b30Pwd = (String) SharedPreferencesUtils.getParam(MyApp.getContext(),"b30pwd","");
         //验证设备密码
         VPOperateManager.getMangerInstance(MyApp.getContext()).confirmDevicePwd(new IBleWriteResponse() {
             @Override
@@ -93,7 +105,7 @@ public class ConnBleHelpService {
             public void onSocialMsgSupportDataChange(FunctionSocailMsgData functionSocailMsgData) {
                 Log.e(TAG,"-----functionSocailMsgData-="+functionSocailMsgData);
             }
-        }, "0000",true );
+        }, b30Pwd,true );
 
         //同步用户信息
         String userData = (String) SharedPreferencesUtils.readObject(MyApp.getContext(),"saveuserinfodata");
@@ -224,7 +236,7 @@ public class ConnBleHelpService {
                 String message = "健康数据-读取结束";
 
             }
-        }, 3);
+        }, 1);
 
 
 
@@ -283,7 +295,7 @@ public class ConnBleHelpService {
         this.connBleMsgDataListener = connBleMsgDataListener;
     }
 
-    public void setConnBleHelpListener(ConnBleHelpListener connBleHelpListener) {
+    public  void setConnBleHelpListener(ConnBleHelpListener connBleHelpListener) {
         this.connBleHelpListener = connBleHelpListener;
     }
 

@@ -1,5 +1,6 @@
 package com.example.bozhilun.android.siswatch.utils;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AppOpsManager;
 import android.content.Context;
@@ -7,13 +8,17 @@ import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Environment;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import com.example.bozhilun.android.MyApp;
+import com.example.bozhilun.android.activity.wylactivity.wyl_util.ScreenShot;
 import com.example.bozhilun.android.bleutil.MyCommandManager;
+import com.example.bozhilun.android.util.Common;
 import com.example.bozhilun.android.util.SharedPreferencesUtils;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,8 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
 import static android.content.Context.TELEPHONY_SERVICE;
+import static com.tencent.mm.sdk.platformtools.MMApplicationContext.getPackageName;
 
 
 /**
@@ -470,6 +475,22 @@ public class WatchUtils {
         return null;
     }
 
+    //版本名称
+    public static String getVersionName(Context mContext)  {
+        try {
+            // 获取packagemanager的实例
+            PackageManager packageManager = mContext.getPackageManager();
+            // getPackageName()是你当前类的包名，0代表是获取版本信息
+            PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(), 0);
+            String version = packInfo.versionName;
+            return version;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
     /**
      * 判断本应用是否存活
      * 如果需要判断本应用是否在后台还是前台用getRunningTask
@@ -488,6 +509,14 @@ public class WatchUtils {
             }
         }
         return isAPPRunning;
+    }
+
+
+    //分享
+    public static void shareCommData(Activity activity){
+        String filePath = Environment.getExternalStorageDirectory() + "/DCIM/" + System.currentTimeMillis() + ".png";
+        ScreenShot.shoot(activity, new File(filePath));
+        Common.showShare(activity, null, false, filePath);
     }
 
 }

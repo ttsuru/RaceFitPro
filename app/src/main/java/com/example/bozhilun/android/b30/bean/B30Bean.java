@@ -62,4 +62,15 @@ public class B30Bean extends DataSupport {
     public void setHalfHourDataStr(String halfHourDataStr) {
         this.halfHourDataStr = halfHourDataStr;
     }
+
+    @Override
+    public String toString() {
+        return "B30Bean{" +
+                "id=" + id +
+                ", date=" + date +
+                ", sportDataStr='" + sportDataStr + '\'' +
+                ", originDataStr='" + originDataStr + '\'' +
+                ", halfHourDataStr='" + halfHourDataStr + '\'' +
+                '}';
+    }
 }

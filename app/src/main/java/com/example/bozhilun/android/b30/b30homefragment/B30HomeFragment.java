@@ -1,7 +1,11 @@
 package com.example.bozhilun.android.b30.b30homefragment;
 
+
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.example.bozhilun.android.MyApp;
 import com.example.bozhilun.android.R;
 import com.example.bozhilun.android.b30.B30BloadDetailActivity;
@@ -25,11 +28,11 @@ import com.example.bozhilun.android.b30.B30HeartDetailActivity;
 import com.example.bozhilun.android.b30.B30SleepDetailActivity;
 import com.example.bozhilun.android.b30.B30StepDetailActivity;
 import com.example.bozhilun.android.b30.ManualMeaureBloadActivity;
+import com.example.bozhilun.android.b30.ManualMeaureHeartActivity;
 import com.example.bozhilun.android.b30.b30view.B30CusBloadView;
 import com.example.bozhilun.android.b30.b30view.B30CusHeartView;
 import com.example.bozhilun.android.b30.b30view.B30CusSleepView;
 import com.example.bozhilun.android.b30.bean.B30Bean;
-import com.example.bozhilun.android.b30.service.B30ConnStateReceiver;
 import com.example.bozhilun.android.b30.service.ConnBleHelpService;
 import com.example.bozhilun.android.bleutil.MyCommandManager;
 import com.example.bozhilun.android.siswatch.LazyFragment;
@@ -44,6 +47,7 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.littlejie.circleprogress.circleprogress.WaveProgress;
 import com.veepoo.protocol.model.datas.HalfHourBpData;
 import com.veepoo.protocol.model.datas.HalfHourRateData;
@@ -53,16 +57,13 @@ import com.veepoo.protocol.model.datas.OriginHalfHourData;
 import com.veepoo.protocol.model.datas.SleepData;
 import com.veepoo.protocol.model.datas.SportData;
 import com.veepoo.protocol.model.datas.TimeData;
-
 import org.litepal.crud.DataSupport;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -74,7 +75,7 @@ import butterknife.Unbinder;
  */
 
 public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.ConnBleMsgDataListener,
-        ConnBleHelpService.ConnBleHealthDataListener, B30ConnStateReceiver.B30ConnStateListener,SwipeRefreshLayout.OnRefreshListener {
+        ConnBleHelpService.ConnBleHealthDataListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "B30HomeFragment";
 
@@ -116,6 +117,18 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
     TextView b30StartEndTimeTv;
     @BindView(R.id.b30HomeSwipeRefreshLayout)
     SwipeRefreshLayout b30HomeSwipeRefreshLayout;
+    @BindView(R.id.homeTodayTv)
+    TextView homeTodayTv;
+    @BindView(R.id.homeTodayImg)
+    ImageView homeTodayImg;
+    @BindView(R.id.homeYestTodayTv)
+    TextView homeYestTodayTv;
+    @BindView(R.id.homeYestdayImg)
+    ImageView homeYestdayImg;
+    @BindView(R.id.homeBeYestdayTv)
+    TextView homeBeYestdayTv;
+    @BindView(R.id.homeBeYestdayImg)
+    ImageView homeBeYestdayImg;
     //日期的集合
     private ArrayList<String> b30BloadList;
     //高低血压集合
@@ -144,7 +157,7 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
     //用于计算最大步数
     private List<Integer> tmpIntegerList;
 
-    private B30ConnStateReceiver b30ConnStateReceiver;
+   // private B30ConnStateReceiver b30ConnStateReceiver;
     private ConnBleHelpService connBleHelpService;
 
     //目标步数
@@ -153,32 +166,46 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
     int defaultSteps = 0;
 
     private List<Integer> sleepList;
-
-
-
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
+            Log.e(TAG,"----hand----="+msg.what);
+            switch (msg.what) {
                 case 1001:  //b30HomeSwipeRefreshLayout 停止刷新
-                    if(!getActivity().isFinishing() && b30HomeSwipeRefreshLayout != null){
+                    if (getActivity() != null && !getActivity().isFinishing() && b30HomeSwipeRefreshLayout != null) {
                         b30HomeSwipeRefreshLayout.setRefreshing(false);
                     }
+                    break;
+                case 1002:
+                    if (getActivity() != null && b30HomeSwipeRefreshLayout != null) {
+                        Log.e(TAG,"----刷新----");
+                        b30HomeSwipeRefreshLayout.setRefreshing(false);
+                    }
+                    getBleMsgData();
                     break;
             }
         }
     };
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        b30ConnStateReceiver = new B30ConnStateReceiver();
-        connBleHelpService = new ConnBleHelpService();
+        Log.e(TAG,"----onCreate---");
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WatchUtils.B30_CONNECTED_ACTION);
+        intentFilter.addAction(WatchUtils.B30_DISCONNECTED_ACTION);
+        getActivity().registerReceiver(broadcastReceiver,intentFilter);
+       // b30ConnStateReceiver = new B30ConnStateReceiver();
+        if(connBleHelpService == null){
+            connBleHelpService = connBleHelpService.getConnBleHelpService();
+        }
+
         connBleHelpService.setConnBleMsgDataListener(this);
         connBleHelpService.setConnBleHealthDataListener(this);
-        b30ConnStateReceiver.setB30ConnStateListener(this);
+       // b30ConnStateReceiver.setB30ConnStateListener(this);
         //目标步数
         goalStep = (int) SharedPreferencesUtils.getParam(MyApp.getContext(), "b30Goal", 0);
         String saveDate = (String) SharedPreferencesUtils.getParam(getActivity(), "saveDate", "");
@@ -214,6 +241,8 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
         b30BloadList = new ArrayList<>();
         bloadListMap = new ArrayList<>();
         sleepList = new ArrayList<>();
+
+        clearDatyStyle(0);
     }
 
 
@@ -223,6 +252,8 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
         b30ProgressBar.setValue(defaultSteps);
         b30SportChartLin.setBackgroundColor(getResources().getColor(R.color.b30_sport));
         b30HomeSwipeRefreshLayout.setOnRefreshListener(this);
+
+
     }
 
     @Override
@@ -241,7 +272,7 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
                     connBleHelpService.getDeviceMsgData();
                     connBleHelpService.readHealthDaty();
                 } else {  //不是搜索进来的
-                    if (diffTime > 1) {
+                    if (diffTime > 5) {
                         getBleMsgData();
                     }
                 }
@@ -255,8 +286,8 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
         if (MyCommandManager.DEVICENAME != null && MyCommandManager.ADDRESS != null) {    //已连接
             b30ConnectStateTv.setText("connected");
         } else {  //未连接
-            if (b30ConnStateReceiver != null) {
-                b30ConnStateReceiver.connectAutoConn(true);
+            if (getActivity() != null && !getActivity().isFinishing()) {
+                b30ConnectStateTv.setText("disconn");
             }
         }
     }
@@ -264,13 +295,26 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Log.e(TAG,"----onDestroyView---");
         unbinder.unbind();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            if(broadcastReceiver != null){
+                getActivity().unregisterReceiver(broadcastReceiver);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     //电量
     @Override
     public void getBleBatteryData(int batteryLevel) {
-        if(!getActivity().isFinishing()){
+        if (!getActivity().isFinishing()) {
             try {
                 if (batteryLevel >= 0 && batteryLevel == 1) {
                     batteryTopImg.setBackground(getResources().getDrawable(R.mipmap.image_battery_two));
@@ -345,12 +389,7 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
         b30BarChart.getAxisLeft().setAxisMinValue(0.8f);//设置Y轴显示最小值，不然0下面会有空隙
         b30BarChart.getAxisLeft().setDrawGridLines(false);//不设置Y轴网格
         b30BarChart.getAxisLeft().setEnabled(false);
-//        barchart.setDescriptionPosition(100,20);//数据描述的位置
-//        barchart.setDescriptionColor(Color.GRAY);//数据的颜色
-//        barchart.setDescriptionTextSize(40);//数据字体大小
-        // barchart.setDescription("No Deal");//设置描述
-        //  barchart.setDescriptionTextSize(20.f);//设置描述字体
-//        barchart.getXAxis().setSpaceBetweenLabels(50);
+
         b30BarChart.getXAxis().setSpaceMax(0.5f);
         b30BarChart.animateXY(1000, 2000);//设置动画
 
@@ -433,9 +472,11 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
             WatchConstants.tmpBloadList = new ArrayList<>();
             WatchConstants.tmpBloadList.clear();
             WatchConstants.tmpBloadList.addAll(halfHourBps);
+            b30HomeBloadChart.setScal(false);
         } else {
             b30HomeBloadChart.setTimeList(b30BloadList);
             b30HomeBloadChart.setMapList(bloadListMap);
+            b30HomeBloadChart.setScal(false);
         }
 
         WatchConstants.tmpListMap = new ArrayList<>();
@@ -450,7 +491,7 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
         WatchConstants.tmpHeartList.clear();
         WatchConstants.tmpHeartList.addAll(halfHourRateDatas);
         heartList.clear();
-        if (halfHourRateDatas != null && halfHourRateDatas.size() > 0) {
+        if (halfHourRateDatas.size() > 0) {
             List<Map<String, Integer>> listMap = new ArrayList<>();
             int k = 0;
             for (int i = 0; i < 48; i++) {
@@ -483,6 +524,10 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
             //圆点的半径
             b30CusHeartView.setPointRadio(5);
             b30CusHeartView.setRateDataList(heartList);
+        }else{
+            //圆点的半径
+            b30CusHeartView.setPointRadio(5);
+            b30CusHeartView.setRateDataList(heartList);
         }
 
 
@@ -496,40 +541,50 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
         b30ChartList.clear();
         tmpIntegerList.clear();
         tmpB30StepList.clear();
-        List<Map<String, Integer>> listMap = new ArrayList<>();
-        int k = 0;
-        for (int i = 0; i < 48; i++) {
-            Map<String, Integer> map = new HashMap<>();
-            int time = i * 30;
-            map.put("time", time);
 
-            TimeData tmpDate = halfHourSportDatas.get(k).getTime();
-            int tmpIntDate = tmpDate.getHMValue();
-            if (tmpIntDate == time) {
-                map.put("val", halfHourSportDatas.get(k).getStepValue());
-                if (k < halfHourSportDatas.size() - 1) {
-                    k++;
+        if(halfHourSportDatas.size()>0){
+            List<Map<String, Integer>> listMap = new ArrayList<>();
+            int k = 0;
+            for (int i = 0; i < 48; i++) {
+                Map<String, Integer> map = new HashMap<>();
+                int time = i * 30;
+                map.put("time", time);
+
+                TimeData tmpDate = halfHourSportDatas.get(k).getTime();
+                int tmpIntDate = tmpDate.getHMValue();
+                if (tmpIntDate == time) {
+                    map.put("val", halfHourSportDatas.get(k).getStepValue());
+                    if (k < halfHourSportDatas.size() - 1) {
+                        k++;
+                    }
+                } else {
+                    map.put("val", 0);
                 }
-            } else {
-                map.put("val", 0);
+                listMap.add(map);
+                //Log.e(TAG, "----time=" + map.get("time") + "val:" + map.get("val"));
             }
-            listMap.add(map);
-            //Log.e(TAG, "----time=" + map.get("time") + "val:" + map.get("val"));
+
+            for (int i = 0; i < listMap.size(); i++) {
+                Map<String, Integer> tmpMap = listMap.get(i);
+                tmpB30StepList.add(new BarEntry(i, tmpMap.get("val")));
+                tmpIntegerList.add(tmpMap.get("val"));
+            }
+            b30ChartList.addAll(tmpB30StepList);
+            b30SportMaxNumTv.setText(Collections.max(tmpIntegerList) + getResources().getString(R.string.steps));
+            initBarChart(b30ChartList);
+            b30BarChart.invalidate();
+        }else{
+            initBarChart(b30ChartList);
+            b30BarChart.setNoDataTextColor(Color.WHITE);
+            b30BarChart.invalidate();
         }
 
-        for (int i = 0; i < listMap.size(); i++) {
-            Map<String, Integer> tmpMap = listMap.get(i);
-            tmpB30StepList.add(new BarEntry(i, tmpMap.get("val")));
-            tmpIntegerList.add(tmpMap.get("val"));
-        }
-        b30ChartList.addAll(tmpB30StepList);
-        b30SportMaxNumTv.setText(Collections.max(tmpIntegerList) + getResources().getString(R.string.steps));
-        initBarChart(b30ChartList);
-        b30BarChart.invalidate();
+
     }
 
     @OnClick({R.id.b30SportChartLin, R.id.b30CusHeartLin, R.id.b30CusBloadLin,
-            R.id.b30MeaureHeartImg, R.id.b30MeaureBloadImg, R.id.b30SleepLin})
+            R.id.b30MeaureHeartImg, R.id.b30MeaureBloadImg, R.id.b30SleepLin,
+            R.id.homeTodayTv,R.id.homeYestTodayTv,R.id.homeBeYestdayTv,R.id.battery_watchRecordShareImg})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.b30SportChartLin: //步数统计
@@ -542,7 +597,7 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
                 startActivity(new Intent(getActivity(), B30BloadDetailActivity.class));
                 break;
             case R.id.b30MeaureHeartImg:    //手动测量心率
-                // startActivity(new Intent(getActivity(), ManualMeaureHeartActivity.class));
+                 startActivity(new Intent(getActivity(), ManualMeaureHeartActivity.class));
                 break;
             case R.id.b30MeaureBloadImg:    //手动测量血压
                 startActivity(new Intent(getActivity(), ManualMeaureBloadActivity.class));
@@ -550,47 +605,147 @@ public class B30HomeFragment extends LazyFragment implements ConnBleHelpService.
             case R.id.b30SleepLin:      //睡眠详情
                 startActivity(new Intent(getActivity(), B30SleepDetailActivity.class));
                 break;
+            case R.id.homeTodayTv:  //今天
+                clearDatyStyle(0);
+                break;
+            case R.id.homeYestTodayTv:  //昨天
+                clearDatyStyle(1);
+                break;
+            case R.id.homeBeYestdayTv:  //前天
+                clearDatyStyle(2);
+                break;
+            case R.id.battery_watchRecordShareImg:  //分享
+                WatchUtils.shareCommData(getActivity());
+                break;
 
         }
 
     }
 
-    //连接成功
+
+    //下拉刷新
     @Override
-    public void onB30Connect() {
-        if (getActivity() != null && !getActivity().isFinishing()) {
-            b30ConnectStateTv.setText("connected");
-            if (connBleHelpService != null && MyCommandManager.DEVICENAME != null) {
-                connBleHelpService.getDeviceMsgData();
-                connBleHelpService.readHealthDaty();
+    public void onRefresh() {
+        if (getActivity() != null && !getActivity().isFinishing() && !b30HomeSwipeRefreshLayout.isRefreshing()) {
+            b30HomeSwipeRefreshLayout.setRefreshing(true);
+
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    handler.sendEmptyMessage(1001);
+                }
+            }, 3 * 1000);
+
+//            handler.postDelayed(new Runnable() {
+//
+//                @Override
+//                public void run() {
+//                    handler.sendEmptyMessage(1002);
+//                }
+//            }, 3 * 1000);
+
+        }
+    }
+
+    //获取手环的数据
+    private void getBleMsgData() {
+        SharedPreferencesUtils.setParam(getActivity(), "saveDate", System.currentTimeMillis() / 1000 + "");
+        connBleHelpService.getDeviceMsgData();
+        connBleHelpService.readHealthDaty();
+    }
+
+
+    private void clearDatyStyle(int code){
+        homeTodayImg.setVisibility(View.INVISIBLE);
+        homeYestdayImg.setVisibility(View.INVISIBLE);
+        homeBeYestdayImg.setVisibility(View.INVISIBLE);
+        switch (code){
+            case 0: //今天
+                homeTodayImg.setVisibility(View.VISIBLE);
+                showHealthData(0);
+                break;
+            case 1: //昨天
+                homeYestdayImg.setVisibility(View.VISIBLE);
+                showHealthData(1);
+                break;
+            case 2: //前天
+                homeBeYestdayImg.setVisibility(View.VISIBLE);
+                showHealthData(2);
+                break;
+        }
+    }
+
+
+    private void showHealthData(int code){
+        B30Bean b30Bean = DataSupport.find(B30Bean.class,1);
+        if(b30Bean != null){
+            Log.e(TAG,"----b30Bean="+b30Bean.toString());
+            switch (code){
+                case 0:
+                    String sptStr = b30Bean.getSportDataStr();
+                    if(sptStr != null){
+                        SportData sportData = new Gson().fromJson(sptStr, SportData.class);
+                        getBleSportData(sportData);
+                    }
+
+                    String healthData = b30Bean.getHalfHourDataStr();
+                    String oriStr = b30Bean.getOriginDataStr();
+                    if(healthData != null){
+                        OriginHalfHourData originHalfHourData = new Gson().fromJson(healthData,OriginHalfHourData.class);
+                        List<OriginData> lt = new Gson().fromJson(oriStr,new TypeToken<List<OriginData>>(){}.getType());
+                        getBleHealtyData(originHalfHourData,lt);
+                    }
+                    break;
+                case 1:
+                    showEmptyData();
+                    break;
+                case 2:
+                    showEmptyData();
+                    break;
             }
         }
 
     }
 
-    //连接失败
-    @Override
-    public void onB30Disconn() {
-        if (getActivity() != null && !getActivity().isFinishing()) {
-            b30ConnectStateTv.setText("disconn");
-        }
+    //展示空的数据
+    private void showEmptyData(){
+        b30ProgressBar.setMaxValue(goalStep);
+        b30ProgressBar.setValue(0);
+
+        initBarChart(new ArrayList<BarEntry>());
+        b30BarChart.invalidate();
+
+
+        //展示步数的图表
+        showSportStepData(new ArrayList<HalfHourSportData>());
+        //展示心率图表
+        showSportHeartData(new ArrayList<HalfHourRateData>());
+        //展示血压图表
+        showBloadData(new ArrayList<HalfHourBpData>());
     }
 
-    //下拉刷新
-    @Override
-    public void onRefresh() {
-        if(!getActivity().isFinishing() && !b30HomeSwipeRefreshLayout.isRefreshing()){
-            getBleMsgData();
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            Log.e(TAG,"-----action="+action);
+            if(action != null){
+                if(action.equals(WatchUtils.B30_CONNECTED_ACTION)){ //连接
+                    if (getActivity() != null && !getActivity().isFinishing()) {
+                        b30ConnectStateTv.setText("connected");
+                        if (connBleHelpService != null && MyCommandManager.DEVICENAME != null) {
+                            connBleHelpService.getDeviceMsgData();
+                            connBleHelpService.readHealthDaty();
+                        }
+                    }
+                }
+                if(action.equals(WatchUtils.B30_DISCONNECTED_ACTION)){  //断开
+                    if (getActivity() != null && !getActivity().isFinishing()) {
+                        b30ConnectStateTv.setText("disconn");
+                    }
+                }
+            }
         }
-    }
+    };
 
-    //获取手环的数据
-    private void getBleMsgData(){
-        if(!getActivity().isFinishing() && !b30HomeSwipeRefreshLayout.isRefreshing()){
-            b30HomeSwipeRefreshLayout.setRefreshing(true);
-        }
-        SharedPreferencesUtils.setParam(getActivity(), "saveDate", System.currentTimeMillis() / 1000 + "");
-        connBleHelpService.getDeviceMsgData();
-        connBleHelpService.readHealthDaty();
-    }
 }

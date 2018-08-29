@@ -1038,27 +1038,32 @@ public class W30SBLEServices extends Service {
 
     public void automaticallyReconnect(final boolean isAuto) {
         Log.e(TAG,"------isAuto-="+isAuto);
-        synchronized (mLocker) {
-            runnable = new Runnable() {
-                @Override
-                public void run() {
-                    if (mNewHandler != null)
-                        mNewHandler.removeMessages(CircularLinks);
-                    if (isAuto) {
-                        if(initialize()){
-                            sanningBle(true);
-                        }
+       String bn = (String) SharedPreferenceUtil.get(getApplicationContext(), "mylanmac", "");
+       if(!TextUtils.isEmpty(bn) && bn.equals("W30")){
 
-                    } else {
-                        sanningBle(false);
+           synchronized (mLocker) {
+               runnable = new Runnable() {
+                   @Override
+                   public void run() {
+                       if (mNewHandler != null)
+                           mNewHandler.removeMessages(CircularLinks);
+                       if (isAuto) {
+                           if(initialize()){
+                               sanningBle(true);
+                           }
+
+                       } else {
+                           sanningBle(false);
 //                        if (runnable != null) {
 //                            mNewHandler.sendEmptyMessage(ClearRunna);
 //                        }
-                    }
-                }
-            };
-            mNewHandler.postDelayed(runnable, 2 * 1000);
-        }
+                       }
+                   }
+               };
+               mNewHandler.postDelayed(runnable, 2 * 1000);
+           }
+       }
+
     }
 
     /**

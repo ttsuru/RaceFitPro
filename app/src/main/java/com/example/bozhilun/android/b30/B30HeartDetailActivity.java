@@ -152,7 +152,7 @@ public class B30HeartDetailActivity extends WatchBaseActivity {
                 finish();
                 break;
             case R.id.commentB30ShareImg:
-
+                WatchUtils.shareCommData(B30HeartDetailActivity.this);
                 break;
         }
     }

@@ -21,6 +21,8 @@ import com.android.volley.toolbox.Volley;
 import com.example.bozhilun.android.B18I.b18idb.DBManager;
 import com.example.bozhilun.android.B18I.b18iutils.B18iUtils;
 import com.example.bozhilun.android.activity.wylactivity.wyl_util.service.AlertService;
+import com.example.bozhilun.android.b30.service.B30ConnStateService;
+import com.example.bozhilun.android.b30.service.B30DataServer;
 import com.example.bozhilun.android.bleutil.BluetoothLeService;
 import com.example.bozhilun.android.exection.CrashHandler;
 import com.example.bozhilun.android.siswatch.bleus.WatchBluetoothService;
@@ -77,9 +79,6 @@ public class MyApp extends LitePalApplication {
         return application;
     }
 
-    //B15P
-    //private static VPOperateManager vpOperateManager;
-
 
     public static OnH9ConnListener h9ConnListener;
 
@@ -109,6 +108,12 @@ public class MyApp extends LitePalApplication {
     //B30手环
     private static VPOperateManager vpOperateManager;
 
+    //B30手环的服务
+    private static B30ConnStateService b30ConnStateService;
+
+
+
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -124,6 +129,8 @@ public class MyApp extends LitePalApplication {
         ShareSDK.initSDK(this);
         //启动w30服务
         startW30SSerever();
+        //启动B30的服务
+        startB30Server();
         bindAlertServices();    //绑定通知的服务
         setDatabase();
         dbManager = DBManager.getInstance(context);
@@ -138,6 +145,41 @@ public class MyApp extends LitePalApplication {
         registerPhoneStateListener(); //注册H8手表的ianh监听
 
     }
+
+
+
+    public static B30DataServer getB30DataServer(){
+        return B30DataServer.getB30DataServer();
+    }
+
+    //B30的服务
+    public static B30ConnStateService getB30ConnStateService(){
+        if(b30ConnStateService == null){
+            startB30Server();
+        }
+        return b30ConnStateService;
+    }
+
+    //启动
+    private static void startB30Server() {
+        Intent ints = new Intent(application.getApplicationContext(), B30ConnStateService.class);
+        application.bindService(ints, b30ServerConn, BIND_AUTO_CREATE);
+    }
+
+    //B30
+    private static ServiceConnection b30ServerConn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            if(service != null){
+                b30ConnStateService = ((B30ConnStateService.B30LoadBuilder) service).getB30Service();
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            b30ConnStateService = null;
+        }
+    };
 
     public static VPOperateManager getVpOperateManager(){
 
@@ -290,10 +332,7 @@ public class MyApp extends LitePalApplication {
         @Override
         public void onEnableToSendComand(BluetoothDevice bluetoothDevice) {
             Log.e("全局App", "------h9--onConnected--");
-//            Message message = new Message();
-//            message.what = H9_REQUEST_CONNECT_CODE;
-//            message.obj = bluetoothDevice;
-//            handler.sendMessage(message);
+
             if (h9ConnListener != null) {
                 h9ConnListener.h9onEnableToSendComand(bluetoothDevice);
             }

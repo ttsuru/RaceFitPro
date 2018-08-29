@@ -1,6 +1,7 @@
 package com.example.bozhilun.android.siswatch;
 
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,9 +11,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
-
 import com.example.bozhilun.android.MyApp;
 import com.example.bozhilun.android.R;
+
 
 /**
  * Created by Administrator on 2017/7/18.
@@ -107,6 +108,7 @@ public class WatchBaseActivity extends AppCompatActivity {
         mHandler.sendEmptyMessageDelayed(MSG_DISMISS_DIALOG, 30 * 1000);
     }
 
+    @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -128,4 +130,5 @@ public class WatchBaseActivity extends AppCompatActivity {
             dialog.dismiss();
         }
     }
+
 }

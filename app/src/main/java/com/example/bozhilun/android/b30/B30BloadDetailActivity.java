@@ -74,6 +74,7 @@ public class B30BloadDetailActivity extends WatchBaseActivity {
         List<Map<Integer, Integer>> listMap = WatchConstants.tmpListMap;
         if (listMap != null) {
             b30DetailBloadView.setMapList(listMap);
+            b30DetailBloadView.setScal(true);
 
         }
         //展示数据
@@ -87,6 +88,7 @@ public class B30BloadDetailActivity extends WatchBaseActivity {
             });
             list.addAll(tmpList);
             b30BloadDetailAdapter.notifyDataSetChanged();
+
 
         }
     }
@@ -110,10 +112,10 @@ public class B30BloadDetailActivity extends WatchBaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.commentB30BackImg:
-
+                finish();
                 break;
             case R.id.commentB30ShareImg:
-
+                WatchUtils.shareCommData(B30BloadDetailActivity.this);
                 break;
         }
     }

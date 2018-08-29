@@ -134,8 +134,8 @@ public class B30SleepDetailActivity extends WatchBaseActivity {
             case R.id.commentB30BackImg:    //返回
                 finish();
                 break;
-            case R.id.commentB30ShareImg:
-
+            case R.id.commentB30ShareImg:   //分享
+                WatchUtils.shareCommData(B30SleepDetailActivity.this);
                 break;
         }
     }

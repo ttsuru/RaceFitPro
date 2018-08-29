@@ -7,20 +7,26 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.aigestudio.wheelpicker.widgets.ProfessionPick;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.bozhilun.android.MyApp;
 import com.example.bozhilun.android.R;
+import com.example.bozhilun.android.activity.AboutActivity;
+import com.example.bozhilun.android.activity.LoginActivity;
 import com.example.bozhilun.android.activity.MyPersonalActivity;
 import com.example.bozhilun.android.b30.B30DeviceActivity;
+import com.example.bozhilun.android.b30.B30SysSettingActivity;
 import com.example.bozhilun.android.bleutil.MyCommandManager;
 import com.example.bozhilun.android.siswatch.LazyFragment;
 import com.example.bozhilun.android.siswatch.NewSearchActivity;
@@ -29,6 +35,7 @@ import com.example.bozhilun.android.util.SharedPreferencesUtils;
 import com.example.bozhilun.android.util.URLs;
 import com.example.bozhilun.android.w30s.utils.httputils.RequestPressent;
 import com.example.bozhilun.android.w30s.utils.httputils.RequestView;
+import com.veepoo.protocol.listener.base.IBleWriteResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -186,12 +193,58 @@ public class B30MineFragment extends LazyFragment implements RequestView {
                 showUnitDialog();
                 break;
             case R.id.b30MineAboutRel:  //关于
-
+                startActivity(new Intent(getActivity(), B30SysSettingActivity.class));
                 break;
             case R.id.b30LogoutBtn: //退出登录
-
+                longOutApp();
                 break;
         }
+    }
+
+    private void longOutApp() {
+        new MaterialDialog.Builder(getActivity())
+                .title(getResources().getString(R.string.prompt))
+                .content("是否退出登录?")
+                .positiveText(getResources().getString(R.string.confirm))
+                .negativeText(getResources().getString(R.string.cancle))
+                .onPositive(new com.afollestad.materialdialogs.MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if(MyCommandManager.DEVICENAME != null){
+                            MyCommandManager.DEVICENAME = null;
+                            MyCommandManager.ADDRESS = null;
+                            MyApp.getVpOperateManager().disconnectWatch(new IBleWriteResponse() {
+                                @Override
+                                public void onResponse(int state) {
+                                    if(state == -1){
+                                        SharedPreferencesUtils.saveObject(MyApp.getContext(), "mylanya", "");
+                                        SharedPreferencesUtils.saveObject(MyApp.getContext(), "mylanmac", "");
+                                        SharedPreferencesUtils.saveObject(MyApp.getContext(), "userId", null);
+                                        SharedPreferencesUtils.saveObject(MyApp.getContext(),"userInfo","");
+                                        SharedPreferencesUtils.setParam(MyApp.getContext(), "isFirst", "");
+                                        startActivity(new Intent(getActivity(),LoginActivity.class));
+                                        getActivity().finish();
+                                    }
+                                }
+                            });
+                        }else{
+                            MyCommandManager.DEVICENAME = null;
+                            MyCommandManager.ADDRESS = null;
+                            SharedPreferencesUtils.saveObject(MyApp.getContext(), "mylanya", "");
+                            SharedPreferencesUtils.saveObject(MyApp.getContext(), "mylanmac", "");
+                            SharedPreferencesUtils.saveObject(MyApp.getContext(), "userId", null);
+                            SharedPreferencesUtils.saveObject(MyApp.getContext(),"userInfo","");
+                            SharedPreferencesUtils.setParam(MyApp.getContext(), "isFirst", "");
+                            startActivity(new Intent(getActivity(),LoginActivity.class));
+                            getActivity().finish();
+
+                        }
+
+
+                    }
+                }).show();
+
+
     }
 
     //设置运动目标

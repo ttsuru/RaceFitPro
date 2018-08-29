@@ -70,10 +70,14 @@ public class GuideActivity extends BaseActivity {
             SharedPreferencesUtils.setParam(MyApp.getContext(),"b30Goal",8000);
         }
         String b30SleepGoal = (String) SharedPreferencesUtils.getParam(MyApp.getContext(),"b30SleepGoal","");
-        if(!WatchUtils.isEmpty(b30SleepGoal)){
+        if(WatchUtils.isEmpty(b30SleepGoal)){
             SharedPreferencesUtils.setParam(MyApp.getContext(),"b30SleepGoal","8.0");
         }
-
+        //B30的默认密码
+        String b30Pwd = (String) SharedPreferencesUtils.getParam(MyApp.getContext(),"b30pwd","");
+        if(WatchUtils.isEmpty(b30Pwd)){
+            SharedPreferencesUtils.setParam(MyApp.getContext(),"b30pwd","0000");
+        }
         //SharedPreferencesUtils.saveObject(MyApp.getContext(),"mylanya","W06X");
         String isFirst = (String) SharedPreferencesUtils.getParam(GuideActivity.this, "msgfirst", "");
         if (WatchUtils.isEmpty(isFirst)) {

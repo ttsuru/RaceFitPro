@@ -1,9 +1,17 @@
 package com.example.bozhilun.android.siswatch;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+
+import com.example.bozhilun.android.R;
 
 /**
  * Created by Administrator on 2017/7/15.
@@ -12,11 +20,14 @@ import android.view.View;
 public abstract class LazyFragment extends Fragment {
 
     private static final String TAG = LazyFragment.class.getSimpleName();
+    private static int MSG_DISMISS_DIALOG = 101;
 
     private boolean isFragmentVisible;
     private boolean isReuseView;
     private boolean isFirstVisible;
     private View rootView;
+
+    private Dialog dialog;
 
 
     //setUserVisibleHint()在Fragment创建时会先被调用一次，传入isVisibleToUser = false
@@ -69,6 +80,16 @@ public abstract class LazyFragment extends Fragment {
             }
         }
         super.onViewCreated(isReuseView ? rootView : view, savedInstanceState);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (dialog != null) {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+        }
     }
 
     @Override
@@ -127,5 +148,48 @@ public abstract class LazyFragment extends Fragment {
 
     protected boolean isFragmentVisible() {
         return isFragmentVisible;
+    }
+
+
+    public void showLoadingDialog(String msg) {
+
+        if (dialog == null) {
+            dialog = new Dialog(getActivity(), R.style.CustomProgressDialog);
+            dialog.setContentView(R.layout.pro_dialog_layout_view);
+            TextView tv = (TextView) dialog.getWindow().findViewById(R.id.progress_tv);
+            tv.setText(msg + "");
+            dialog.setCancelable(true);
+            dialog.show();
+        } else {
+            dialog.setContentView(R.layout.pro_dialog_layout_view);
+            dialog.setCancelable(true);
+            TextView tv = (TextView) dialog.getWindow().findViewById(R.id.progress_tv);
+            tv.setText(msg + "");
+            dialog.show();
+        }
+        mHandler.sendEmptyMessageDelayed(MSG_DISMISS_DIALOG, 30 * 1000);
+    }
+
+    @SuppressLint("HandlerLeak")
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (MSG_DISMISS_DIALOG == msg.what) {
+                if (null != dialog) {
+                    if (dialog.isShowing()) {
+                        Log.i("----", "handler get mesage");
+                        dialog.dismiss();
+                    }
+                }
+            }
+        }
+    };
+
+    //关闭进度条
+    public void closeLoadingDialog() {
+        if (dialog != null) {
+            dialog.dismiss();
+        }
     }
 }

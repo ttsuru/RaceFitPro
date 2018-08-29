@@ -70,6 +70,8 @@ public class BlueAdapterUtils {
         intentFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
         intentFilter.addAction(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
         intentFilter.addAction(W30SBLEServices.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(WatchUtils.B30_CONNECTED_ACTION);
+        intentFilter.addAction(WatchUtils.B30_DISCONNECTED_ACTION);
         return intentFilter;
     }
 

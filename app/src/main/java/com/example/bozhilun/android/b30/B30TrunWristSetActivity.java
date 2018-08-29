@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-
 import com.aigestudio.wheelpicker.widgets.ProvincePick;
 import com.example.bozhilun.android.MyApp;
 import com.example.bozhilun.android.R;
@@ -17,12 +16,11 @@ import com.veepoo.protocol.listener.base.IBleWriteResponse;
 import com.veepoo.protocol.listener.data.INightTurnWristeDataListener;
 import com.veepoo.protocol.model.datas.NightTurnWristeData;
 import com.veepoo.protocol.model.datas.TimeData;
-
+import com.veepoo.protocol.model.settings.NightTurnWristSetting;
+import com.veepoo.protocol.operate.NightTurnWristOperate;
 import org.apache.commons.lang.StringUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -111,6 +109,8 @@ public class B30TrunWristSetActivity extends WatchBaseActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 showSeekBarValueTv.setText("(" + progress + ")");
+
+
             }
 
             @Override
@@ -138,7 +138,6 @@ public class B30TrunWristSetActivity extends WatchBaseActivity {
                 setChooseDate(1);
                 break;
             case R.id.b30TrunWristSaveBtn:  //保存
-                Log.e(TAG, "----保存=" + b30TrunWristSeekBar.getProgress());
                 //起始时间
                 String startD = b30TrunWristStartTv.getText().toString().trim();
                 int startHour = Integer.valueOf(StringUtils.substringBefore(startD, ":").trim());
@@ -148,12 +147,17 @@ public class B30TrunWristSetActivity extends WatchBaseActivity {
                 int endHour = Integer.valueOf(StringUtils.substringBefore(endD, ":").trim());
                 int endMine = Integer.valueOf(StringUtils.substringAfter(endD, ":").trim());
                 TimeData endTime = new TimeData(endHour, endMine);
+
+
                 MyApp.getVpOperateManager().settingNightTurnWriste(iBleWriteResponse, new INightTurnWristeDataListener() {
                     @Override
                     public void onNightTurnWristeDataChange(NightTurnWristeData nightTurnWristeData) {
-
+                        Log.e(TAG,"-----翻腕-="+nightTurnWristeData.toString());
+                        if(nightTurnWristeData.getOprateStauts() == NightTurnWristOperate.NTStatus.SUCCESS){
+                            finish();
+                        }
                     }
-                }, true, startTime, endTime);
+                }, new NightTurnWristSetting(true,startTime,endTime,b30TrunWristSeekBar.getProgress()));
                 break;
         }
     }

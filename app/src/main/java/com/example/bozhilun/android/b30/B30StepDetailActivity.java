@@ -262,7 +262,8 @@ public class B30StepDetailActivity extends WatchBaseActivity {
     }
 
 
-    @OnClick({R.id.commentB30BackImg, R.id.stepDetailStepLin, R.id.stepDetailDisLin, R.id.stepDetailKcalLin})
+    @OnClick({R.id.commentB30BackImg, R.id.stepDetailStepLin,
+            R.id.stepDetailDisLin, R.id.stepDetailKcalLin,R.id.commentB30ShareImg})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.commentB30BackImg:
@@ -280,6 +281,11 @@ public class B30StepDetailActivity extends WatchBaseActivity {
                 clearStyleData(2);
                 showSportDetail(3);
                 break;
+            case R.id.commentB30ShareImg:   //分享
+                WatchUtils.shareCommData(B30StepDetailActivity.this);
+                break;
+
+
         }
     }
 

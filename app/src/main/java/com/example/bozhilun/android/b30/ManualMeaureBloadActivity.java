@@ -15,6 +15,7 @@ import com.example.bozhilun.android.R;
 import com.example.bozhilun.android.b30.b30view.CustomCircleProgressBar;
 import com.example.bozhilun.android.bleutil.MyCommandManager;
 import com.example.bozhilun.android.siswatch.WatchBaseActivity;
+import com.example.bozhilun.android.siswatch.utils.WatchUtils;
 import com.veepoo.protocol.listener.base.IBleWriteResponse;
 import com.veepoo.protocol.listener.data.IBPDetectDataListener;
 import com.veepoo.protocol.model.datas.BpData;
@@ -61,10 +62,12 @@ public class ManualMeaureBloadActivity extends WatchBaseActivity {
                     stopMeaureBoload();
                     Log.e(TAG,"----测量结果="+meaureBpData.getHighPressure() + "/" + meaureBpData.getLowPressure());
                     if (b30MeaureBloadProgressView != null) {
-                        b30MeaureBloadProgressView.setProgressText(meaureBpData.getHighPressure() + "/" + meaureBpData.getLowPressure());//.setProgressText(meaureBpData.getHighPressure() + "/" + meaureBpData.getLowPressure());
+                        b30MeaureBloadProgressView.setTmpTxt(meaureBpData.getHighPressure() + "/" + meaureBpData.getLowPressure());//.setProgressText(meaureBpData.getHighPressure() + "/" + meaureBpData.getLowPressure());
                         showStateTv.setText("正常");
                     }
                 }
+            }else{
+                stopMeaureBoload();
             }
         }
     };
@@ -91,14 +94,14 @@ public class ManualMeaureBloadActivity extends WatchBaseActivity {
         commentB30ShareImg.setVisibility(View.VISIBLE);
     }
 
-    @OnClick({R.id.commentB30BackImg, R.id.b30MeaureBloadProgressView, R.id.b30MeaureStartImg})
+    @OnClick({R.id.commentB30BackImg,R.id.commentB30ShareImg,R.id.b30MeaureStartImg})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.commentB30BackImg:    //返回
                 finish();
                 break;
-            case R.id.b30MeaureBloadProgressView:   //分享
-
+            case R.id.commentB30ShareImg:   //分享
+                WatchUtils.shareCommData(ManualMeaureBloadActivity.this);
                 break;
             case R.id.b30MeaureStartImg:    //开始或者停止测量
                 b30MeaurePlaceHolderImg.setVisibility(View.GONE);

@@ -3,6 +3,7 @@ package com.example.bozhilun.android.b30;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -155,6 +156,7 @@ public class B30LongSitSetActivity extends WatchBaseActivity {
             MyApp.getVpOperateManager().settingLongSeat(iBleWriteResponse, new LongSeatSetting(startHour, startMine, endHour, endMine, longTime, true), new ILongSeatDataListener() {
                 @Override
                 public void onLongSeatDataChange(LongSeatData longSeatData) {
+                    Log.e("久坐","----longSeatData="+longSeatData.toString());
                     if(longSeatData.getStatus() == LongSeatOperater.LSStatus.OPEN_SUCCESS){
                         finish();
                     }

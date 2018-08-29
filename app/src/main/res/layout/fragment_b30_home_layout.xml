@@ -58,7 +58,7 @@
                     app:lockWave="false"
                     app:valueColor="@color/white"
                     app:valueSize="45sp"
-                    app:waveHeight="35dp"
+                    app:waveHeight="20dp"
                     app:waveNum="1" />
 
 
@@ -102,8 +102,9 @@
 
 
                 <TextView
+                    android:id="@+id/homeTodayTv"
                     android:layout_width="wrap_content"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:text="@string/today"
                     android:padding="3dp"
                     android:layout_gravity="center|top"
@@ -111,11 +112,11 @@
                     android:layout_height="wrap_content" />
 
                 <ImageView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/homeTodayImg"
+                    android:layout_width="15dp"
                     android:layout_gravity="center|bottom"
-                    android:visibility="invisible"
                     android:background="@drawable/fgm_home_move"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="15dp" />
 
 
             </LinearLayout>
@@ -131,8 +132,9 @@
 
 
                 <TextView
+                    android:id="@+id/homeYestTodayTv"
                     android:layout_width="wrap_content"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:text="@string/yesterday"
                     android:padding="3dp"
                     android:layout_gravity="center|top"
@@ -140,11 +142,11 @@
                     android:layout_height="wrap_content" />
 
                 <ImageView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/homeYestdayImg"
+                    android:layout_width="15dp"
                     android:layout_gravity="center|bottom"
-                    android:visibility="invisible"
                     android:background="@drawable/fgm_home_move"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="15dp" />
 
 
             </LinearLayout>
@@ -158,8 +160,9 @@
 
 
                 <TextView
+                    android:id="@+id/homeBeYestdayTv"
                     android:layout_width="wrap_content"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:text="前天"
                     android:padding="3dp"
                     android:layout_gravity="center|top"
@@ -167,11 +170,11 @@
                     android:layout_height="wrap_content" />
 
                 <ImageView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/homeBeYestdayImg"
+                    android:layout_width="15dp"
                     android:layout_gravity="center|bottom"
-                    android:visibility="invisible"
                     android:background="@drawable/fgm_home_move"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="15dp" />
 
 
             </LinearLayout>

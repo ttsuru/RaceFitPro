@@ -23,7 +23,7 @@
     <color name="blue_tog_btn">#397cbf</color>
     <!-- 深蓝色:toggleBtn -->
     <color name="blue_tog_btn_pressed">#286DD4</color>
-
+    <color name="htcolor">#FE8BB7</color>
 
     <color name="backgoundhtest">#D0593B</color>
     <color name="colorPrimaryDarks">#303F9F</color>

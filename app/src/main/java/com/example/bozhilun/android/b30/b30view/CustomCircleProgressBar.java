@@ -11,6 +11,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
@@ -23,6 +24,8 @@ import static android.graphics.Paint.Style.STROKE;
  */
 
 public class CustomCircleProgressBar extends View {
+
+    private static final String TAG = "CustomCircleProgressBar";
 
     private int outsideColor;    //进度的颜色
     private float outsideRadius;    //外圆半径大小
@@ -37,6 +40,9 @@ public class CustomCircleProgressBar extends View {
     private Paint paint;
     private String progressText;     //圆环内文字
     private Rect rect;
+    private String tmpTxt = null;
+
+    private Paint txtPaint; //绘制圆环内文字的画笔
 
     private ValueAnimator animator;
 
@@ -90,24 +96,44 @@ public class CustomCircleProgressBar extends View {
 
     public CustomCircleProgressBar(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
+        initAttrs(context,attrs,0);
     }
+
+
 
     public CustomCircleProgressBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CustomCircleProgressBar, defStyleAttr, 0);
-        outsideColor = a.getColor(R.styleable.CustomCircleProgressBar_outside_color, ContextCompat.getColor(getContext(), R.color.colorPrimary));
-        outsideRadius = a.getDimension(R.styleable.CustomCircleProgressBar_outside_radius, DimenUtil.dp2px(getContext(), 60.0f));
-        insideColor = a.getColor(R.styleable.CustomCircleProgressBar_inside_color, ContextCompat.getColor(getContext(), R.color.white));
-        progressTextColor = a.getColor(R.styleable.CustomCircleProgressBar_progress_text_color, ContextCompat.getColor(getContext(), R.color.white));
-        progressTextSize = a.getDimension(R.styleable.CustomCircleProgressBar_progress_text_size, DimenUtil.dp2px(getContext(), 14.0f));
-        progressWidth = a.getDimension(R.styleable.CustomCircleProgressBar_progress_width, DimenUtil.dp2px(getContext(), 10.0f));
-        progress = a.getFloat(R.styleable.CustomCircleProgressBar_progress, 50.0f);
-        maxProgress = a.getInt(R.styleable.CustomCircleProgressBar_max_progress, 100);
-        direction = a.getInt(R.styleable.CustomCircleProgressBar_direction, 3);
+        initAttrs(context,attrs,defStyleAttr);
 
-        a.recycle();
+    }
+
+
+    private void initAttrs(Context context, AttributeSet attrs, int defStyleAttr) {
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CustomCircleProgressBar, defStyleAttr, 0);
+        if(a != null){
+            outsideColor = a.getColor(R.styleable.CustomCircleProgressBar_outside_color, ContextCompat.getColor(getContext(), R.color.colorPrimary));
+            outsideRadius = a.getDimension(R.styleable.CustomCircleProgressBar_outside_radius, DimenUtil.dp2px(getContext(), 60.0f));
+            insideColor = a.getColor(R.styleable.CustomCircleProgressBar_inside_color, ContextCompat.getColor(getContext(), R.color.white));
+            progressTextColor = a.getColor(R.styleable.CustomCircleProgressBar_progress_text_color, ContextCompat.getColor(getContext(), R.color.white));
+            progressTextSize = a.getDimension(R.styleable.CustomCircleProgressBar_progress_text_size, DimenUtil.dp2px(getContext(), 14.0f));
+            progressWidth = a.getDimension(R.styleable.CustomCircleProgressBar_progress_width, DimenUtil.dp2px(getContext(), 10.0f));
+            progress = a.getFloat(R.styleable.CustomCircleProgressBar_progress, 50.0f);
+            maxProgress = a.getInt(R.styleable.CustomCircleProgressBar_max_progress, 100);
+            direction = a.getInt(R.styleable.CustomCircleProgressBar_direction, 3);
+
+            a.recycle();
+        }
 
         paint = new Paint();
+
+        initPaint();
+    }
+
+    private void initPaint() {
+        txtPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        txtPaint.setColor(progressTextColor);
+        txtPaint.setTextSize(23f);
+        txtPaint.setStrokeWidth(3f);
     }
 
     @Override
@@ -128,14 +154,13 @@ public class CustomCircleProgressBar extends View {
 
         //第三步:画圆环内百分比文字
         rect = new Rect();
-        paint.setColor(progressTextColor);
-        paint.setTextSize(progressTextSize);
-        paint.setStrokeWidth(0);
-        progressText = getProgressText(0,"1");
-        paint.getTextBounds(progressText, 0, progressText.length(), rect);
+        progressText = getProgressText();
+        txtPaint.getTextBounds(progressText, 0, progressText.length(), rect);
         Paint.FontMetricsInt fontMetrics = paint.getFontMetricsInt();
         int baseline = (getMeasuredHeight() - fontMetrics.bottom + fontMetrics.top) / 2 - fontMetrics.top;  //获得文字的基准线
-        canvas.drawText(progressText, getMeasuredWidth() / 2 - rect.width() / 2, baseline, paint);
+
+        canvas.drawText(progressText, getMeasuredWidth() / 2 - rect.width() / 2, baseline, txtPaint);
+
     }
 
     @Override
@@ -161,19 +186,25 @@ public class CustomCircleProgressBar extends View {
     }
 
     //中间的进度百分比
-    public String getProgressText(int code,String txt) {
-        if(code == 0){
-            return (int) ((progress / maxProgress) * 100) + "%";
-        }else{
-            return txt;
-        }
+    public String getProgressText() {
 
+      return tmpTxt != null ?tmpTxt : (int) ((progress / maxProgress) * 100) + "%";
+
+    }
+
+    public String getTmpTxt() {
+        return tmpTxt;
+    }
+
+    public void setTmpTxt(String tmpTxt) {
+        this.tmpTxt = tmpTxt;
+        invalidate();
     }
 
     //设置中间的文字
     public void setProgressText(String progressText) {
         this.progressText = progressText;
-        invalidate();
+
     }
 
     public int getOutsideColor() {
@@ -250,10 +281,10 @@ public class CustomCircleProgressBar extends View {
         if (progress > maxProgress) {
             progress = maxProgress;
         }
-        startAnim(progress);
+        startAnim(progress,27 * 1000);
     }
 
-    private void startAnim(float startProgress) {
+    private void startAnim(float startProgress,int dur) {
         animator = ObjectAnimator.ofFloat(0, startProgress);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -263,7 +294,7 @@ public class CustomCircleProgressBar extends View {
             }
         });
         animator.setStartDelay(500);
-        animator.setDuration(27 * 1000);
+        animator.setDuration(dur);
         animator.setInterpolator(new LinearInterpolator());
         animator.start();
     }
@@ -271,7 +302,7 @@ public class CustomCircleProgressBar extends View {
     public void stopAnim(){
         if(animator != null){
             animator.pause();
-            startAnim(0f);
+            startAnim(0f,0);
             invalidate();
         }
     }

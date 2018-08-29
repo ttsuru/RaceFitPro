@@ -445,7 +445,7 @@ public class MyPersonalActivity extends BaseActivity implements RequestView {
                                 .viewTextSize(25) // pick view text size
                                 .colorCancel(Color.parseColor("#999999")) //color of cancel button
                                 .colorConfirm(Color.parseColor("#009900"))//color of confirm button
-                                .minYear(1950) //min year in loop
+                                .minYear(1900) //min year in loop
                                 .maxYear(2020) // max year in loop
                                 .dateChose("2000-06-15") // date chose when init popwindow
                                 .build();

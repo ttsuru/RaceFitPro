@@ -47,6 +47,10 @@ public class B30CusBloadView extends View {
 
     //画横线的画笔
     private Paint horiPaint;
+
+    //画刻度尺的画笔
+    private Paint scalePaint;
+
     private int horiColor;
     //高度
     private int height;
@@ -59,6 +63,9 @@ public class B30CusBloadView extends View {
     private float mTimeCurrentWidth;
 
     private float mTxtCurrentWidth;
+
+    //是否绘制刻度和横线
+    private boolean isScal = false;
 
     //时间点
     private ArrayList<String> timeList = new ArrayList<>();
@@ -73,13 +80,11 @@ public class B30CusBloadView extends View {
 
     public B30CusBloadView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        Log.e(TAG,"----111---");
         initAttrs(context,attrs);
     }
 
     public B30CusBloadView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        Log.e(TAG,"----222---");
         initAttrs(context,attrs);
     }
 
@@ -123,9 +128,16 @@ public class B30CusBloadView extends View {
         emptyPaint.setTextSize(18f);
 
         horiPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        horiPaint.setStrokeWidth(2f);
-        highPaint.setColor(Color.WHITE);
+        horiPaint.setStrokeWidth(1f);
+        horiPaint.setColor(Color.WHITE);
         horiPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+
+        scalePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        scalePaint.setStrokeWidth(1f);
+        scalePaint.setColor(Color.WHITE);
+        scalePaint.setTextSize(20f);
+        scalePaint.setStyle(Paint.Style.FILL_AND_STROKE);
+
 
     }
 
@@ -142,6 +154,8 @@ public class B30CusBloadView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+
+        Log.e(TAG,"----onSizeChanged="+w+"--h="+h+"--oldw="+oldh+"-oldh="+oldh);
         height = getHeight();
         width = getWidth();
         Log.e(TAG,"-----onSize="+height+"--wi="+width);
@@ -164,6 +178,8 @@ public class B30CusBloadView extends View {
         Log.e(TAG,"-----onDraw----");
         //绘制横线
         drawHorizonLin(canvas);
+        //绘制坐标
+       // drawScale(canvas);
         //绘制日期
         drawTimeLin(canvas);
         //绘制点
@@ -172,11 +188,44 @@ public class B30CusBloadView extends View {
         drawEmptyTxt(canvas);
     }
 
+    private void drawScale(Canvas canvas) {
+        for(int i = 1;i<=5;i++){
+            canvas.drawText(30 * i+"",10,-i*getHeight()/5,scalePaint);
+        }
+    }
+
     //绘制横线
     private void drawHorizonLin(Canvas canvas) {
-        for(int i = 1;i<=5;i++){
-            canvas.drawLine(0,i*getHeight()/5-30,getWidth(),i*getHeight()/5-30,horiPaint);
+        if(isScal){
+            for(int j = 0;j<timeStr.length;j++){
+                canvas.drawText(timeStr[j],mTxtCurrentWidth*j+40,-10,timePaint);
+            }
+            for(int i = 1;i<=5;i++){
+
+                //绘制4条横线
+                canvas.drawLine(40,-i*getHeight()/5,getWidth(),-i*getHeight()/5,horiPaint);
+
+                switch (i){
+                    case 1:
+                        canvas.drawText(30 +"",10,-i*getHeight()/5+5,scalePaint);
+                        break;
+                    case 2:
+                        canvas.drawText(80 +"",10,-i*getHeight()/5+5,scalePaint);
+                        break;
+                    case 3:
+                        canvas.drawText(130 +"",10,-i*getHeight()/5+5,scalePaint);
+                        break;
+                    case 4:
+                        canvas.drawText(180 +"",10,-i*getHeight()/5+5,scalePaint);
+                        break;
+                    case 5:
+                        canvas.drawText(230+"",10,-i*getHeight()/5+5,scalePaint);
+                        break;
+                }
+
+            }
         }
+
     }
 
     private void drawEmptyTxt(Canvas canvas) {
@@ -197,13 +246,13 @@ public class B30CusBloadView extends View {
                     Log.e(TAG,"-----高低-="+mps.toString());
                     Log.e(TAG,"-----宽度222="+getWidth()/mapList.size());
                     //绘制低压的点
-                    canvas.drawCircle(i * getWidth()/mapList.size() + 10,-mps.getKey()-100,mCirRadio,lowPaint);
+                    canvas.drawCircle(i==0?40:i * getWidth()/mapList.size() + 10,-mps.getKey(),mCirRadio,lowPaint);
                     //绘制高压的点
-                    canvas.drawCircle( i* getWidth()/mapList.size() + 10,-mps.getValue()-100 ,mCirRadio,highPaint);
+                    canvas.drawCircle( i==0?40:i* getWidth()/mapList.size() + 10,-mps.getValue() ,mCirRadio,highPaint);
                     //绘制连线
                     Path path = new Path();
-                    path.moveTo(i * getWidth()/mapList.size() + 10,-mps.getKey()-100);
-                    path.lineTo(i * getWidth()/mapList.size() + 10,-mps.getValue()-100);
+                    path.moveTo(i==0?40:i * getWidth()/mapList.size() + 10,-mps.getKey());
+                    path.lineTo(i==0?40:i * getWidth()/mapList.size() + 10,-mps.getValue());
                     path.close();
                     canvas.drawPath(path,linPaint);
                 }
@@ -244,6 +293,15 @@ public class B30CusBloadView extends View {
 
     public void setMapList(List<Map<Integer, Integer>> mapList) {
         this.mapList = mapList;
+        invalidate();
+    }
+
+    public boolean isScal() {
+        return isScal;
+    }
+
+    public void setScal(boolean scal) {
+        isScal = scal;
         invalidate();
     }
 

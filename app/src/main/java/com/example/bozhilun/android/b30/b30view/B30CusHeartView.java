@@ -112,6 +112,7 @@ public class B30CusHeartView extends View {
         emptyPaint.setStrokeWidth(5f);
         emptyPaint.setColor(Color.parseColor("#88d785"));
         emptyPaint.setAntiAlias(true);
+        emptyPaint.setTextSize(20f);
 
     }
 
@@ -148,9 +149,9 @@ public class B30CusHeartView extends View {
                 if(rateDataList.size()-1>=i){
                     Log.e("HEART","-----value--="+rateDataList.get(i)+"--width="+i*mCurrentWidth+5);
                     if(rateDataList.get(i) != 0){
-                        canvas.drawCircle(i==0?5:i*mCurrentWidth+5,-rateDataList.get(i)-130,pointRadio,paint);
+                        canvas.drawCircle(i==0?5:i*mCurrentWidth+5,-rateDataList.get(i)-150,pointRadio,paint);
                         float pointX = (i==0?5:i*mCurrentWidth+5);
-                        float porintY = (-rateDataList.get(i)-130);
+                        float porintY = (-rateDataList.get(i)-150);
                         Map<Float,Float> tmpMap = new HashMap<>();
                         tmpMap.put(pointX,porintY);
                         listMap.add(tmpMap);
@@ -161,23 +162,27 @@ public class B30CusHeartView extends View {
             }
 
 
-            for(int j = 0;j<listMap.size();j++){
-                Map<Float,Float> map = listMap.get(j);
-                for(Map.Entry<Float,Float> valueMap : map.entrySet()){
-                    float xValue = valueMap.getKey();
-                    float yValue = valueMap.getValue();
-                    Log.e(TAG,"----xValue="+xValue+"--yValue="+yValue);
-                    if(j == 0){
-                        path.moveTo(xValue,yValue);
-                    }else{
-                        path.lineTo(xValue,yValue);
-                    }
-
-                }
-            }
-
-            path.close();
-            canvas.drawPath(path,linPain);
+//            for(int j = 0;j<listMap.size();j++){
+//                Map<Float,Float> map = listMap.get(j);
+//                for(Map.Entry<Float,Float> valueMap : map.entrySet()){
+//                    float xValue = valueMap.getKey();
+//                    float yValue = valueMap.getValue();
+//                    Log.e(TAG,"----xValue="+xValue+"--yValue="+yValue);
+//                    if(j == 0){
+//                        path.moveTo(xValue,yValue);
+//                        path.close();
+//                    }else{
+//                       // path.lineTo(xValue,yValue);
+//                        path.quadTo(xValue,yValue,xValue,yValue);
+//                    }
+//
+//                }
+//            }
+//
+//
+//
+//            path.close();
+//            canvas.drawPath(path,linPain);
             drawTimeText(canvas);
         }
 
@@ -185,7 +190,7 @@ public class B30CusHeartView extends View {
     }
     //绘制空数据时显示的文字
     private void drawEmptyTxt(Canvas canvas){
-        if(rateDataList== null || rateDataList.size()<0){
+        if(rateDataList== null || rateDataList.size()<=0){
             canvas.drawText("No Data",getWidth()/2-40,-getHeight()/2,emptyPaint);
         }
     }

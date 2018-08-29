@@ -3,23 +3,24 @@ package com.example.bozhilun.android.b30.service;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
+import android.os.Binder;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.os.Vibrator;
+import android.support.annotation.Nullable;
 import android.util.Log;
+
 import com.example.bozhilun.android.MyApp;
 import com.example.bozhilun.android.R;
 import com.example.bozhilun.android.bleutil.MyCommandManager;
-import com.example.bozhilun.android.imagepicker.TempActivity;
-import com.example.bozhilun.android.siswatch.NewSearchActivity;
 import com.example.bozhilun.android.siswatch.utils.WatchUtils;
 import com.example.bozhilun.android.util.SharedPreferencesUtils;
 import com.inuker.bluetooth.library.BluetoothClient;
@@ -33,68 +34,25 @@ import com.veepoo.protocol.listener.base.IABleConnectStatusListener;
 import com.veepoo.protocol.listener.base.IConnectResponse;
 import com.veepoo.protocol.listener.base.INotifyResponse;
 import com.veepoo.protocol.listener.data.IFindPhonelistener;
-import com.veepoo.protocol.model.datas.OriginHalfHourData;
 
 import java.io.IOException;
 
-import static com.suchengkeji.android.w30sblelibrary.utils.W30SBleUtils.isOtaConn;
+public class B30ConnStateService extends Service {
 
-/**
- * Created by Administrator on 2018/8/4.
- */
-
-/**
- * B30手环的连接状态监听
- */
-public class B30ConnStateReceiver extends BroadcastReceiver {
-
-    private static final String TAG = "B30ConnStateReceiver";
-
-    private static final int SEARCH_REQUEST_CODE = 1001;
-    private static final int AUTO_CONN_REQUEST_CODE = 1002;
-
-    private String bleMac;
+    private static final String TAG = "B30ConnStateService";
+    private static final int SEARCH_REQUEST_CODE = 1001;    //扫描
+    private static final int AUTO_CONN_REQUEST_CODE = 1002; //非手动断开
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothClient bluetoothClient;
+    private final IBinder mLocalBinder = new B30LoadBuilder();
+    private ConnBleHelpService connBleHelpService;
+    public B30ConnStateListener b30ConnStateListener;
+
     //震动
     private Vibrator mVibrator;
     private MediaPlayer mMediaPlayer;
 
-    public B30ConnStateListener b30ConnStateListener;
 
-    public void setB30ConnStateListener(B30ConnStateListener b30ConnStateListener) {
-        this.b30ConnStateListener = b30ConnStateListener;
-    }
-
-    public B30ConnStateReceiver() {
-
-        //注册b30的连接状态
-        bluetoothClient = new BluetoothClient(MyApp.getContext());
-        BluetoothManager bluetoothManager = (BluetoothManager) MyApp.getContext().getSystemService(Context.BLUETOOTH_SERVICE);
-        if(bluetoothManager != null){
-            bluetoothAdapter = bluetoothManager.getAdapter();
-        }
-    }
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        String action = intent.getAction();
-        Log.e(TAG, "-----action=" + action);
-        if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-            int bleState = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
-            Log.e(TAG, "-----bleState--=" + bleState);
-            switch (bleState) {
-                case BluetoothAdapter.STATE_TURNING_ON: //蓝牙打开 11
-
-                    break;
-                case BluetoothAdapter.STATE_TURNING_OFF:    //蓝牙关闭 13
-
-                    break;
-            }
-
-        }
-
-    }
 
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler(){
@@ -126,7 +84,7 @@ public class B30ConnStateReceiver extends BroadcastReceiver {
                         if(bluetoothClient != null){
                             bluetoothClient.stopSearch();
                         }
-                        OnB30ConnBle(bleMacss);
+                        connB30ConnBle(bleMacss);
                     }
                     break;
             }
@@ -135,6 +93,74 @@ public class B30ConnStateReceiver extends BroadcastReceiver {
     };
 
 
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        registerConnState();
+        bluetoothClient = new BluetoothClient(MyApp.getContext());
+        BluetoothManager bluetoothManager = (BluetoothManager) MyApp.getContext().getSystemService(Context.BLUETOOTH_SERVICE);
+        if(bluetoothManager != null){
+            bluetoothAdapter = bluetoothManager.getAdapter();
+        }
+
+    }
+
+    //注册广播
+    private void registerConnState() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WatchUtils.B30_CONNECTED_ACTION);
+        intentFilter.addAction(WatchUtils.B30_DISCONNECTED_ACTION);
+        registerReceiver(broadcastReceiver,intentFilter);
+    }
+
+
+    //连接
+    public void connB30ConnBle(final String mac){
+        MyApp.getVpOperateManager().registerConnectStatusListener(mac,iaBleConnectStatusListener);
+        MyApp.getVpOperateManager().connectDevice(mac, new IConnectResponse() {
+            @Override
+            public void connectState(int i, BleGattProfile bleGattProfile, boolean b) {
+                Log.e(TAG,"----connectState="+i);
+                if(i == Code.REQUEST_SUCCESS){  //连接成功过
+                    if(bluetoothClient != null){
+                        bluetoothClient.stopSearch();
+                    }
+                }
+            }
+        }, new INotifyResponse() {
+            @Override
+            public void notifyState(int i) {
+                Log.e(TAG,"----notifiy="+i);
+                if(i == Code.REQUEST_SUCCESS){
+                    if(connBleHelpService == null){
+                        connBleHelpService = connBleHelpService.getConnBleHelpService();
+                    }
+                   // connBleHelpService = connBleHelpService.getConnBleHelpService();
+                    connBleHelpService.setConnBleHelpListener(new ConnBleHelpService.ConnBleHelpListener() {
+                        @Override
+                        public void connSuccState() {
+                            MyCommandManager.DEVICENAME = "B30";
+                            MyCommandManager.ADDRESS = mac;
+                            SharedPreferencesUtils.saveObject(MyApp.getContext(), "mylanya", "B30");
+                            SharedPreferencesUtils.saveObject(MyApp.getContext(), "mylanmac", mac);
+                            Intent intent = new Intent();
+                            intent.setAction(WatchUtils.B30_CONNECTED_ACTION);
+                            sendBroadcast(intent);
+
+//
+//                            if(b30ConnStateListener != null){
+//                                b30ConnStateListener.onB30Connect();
+//                            }
+                        }
+                    });
+                    connBleHelpService.doConnOperater();
+                }
+            }
+        });
+    }
+
+    //自动连接
     public void connectAutoConn(boolean isScan) {
         if(isScan){
             if(bluetoothAdapter != null && bluetoothAdapter.isEnabled()){
@@ -149,10 +175,10 @@ public class B30ConnStateReceiver extends BroadcastReceiver {
                     @Override
                     public void onDeviceFounded(SearchResult searchResult) {
                         Log.e(TAG,"----onDeviceFound="+searchResult.getName()+"-mac="+searchResult.getAddress());
-                            Message message = handler.obtainMessage();
-                            message.what = SEARCH_REQUEST_CODE;
-                            message.obj = searchResult;
-                            handler.sendMessage(message);
+                        Message message = handler.obtainMessage();
+                        message.what = SEARCH_REQUEST_CODE;
+                        message.obj = searchResult;
+                        handler.sendMessage(message);
 
                     }
 
@@ -174,48 +200,6 @@ public class B30ConnStateReceiver extends BroadcastReceiver {
         }
     }
 
-    //连接
-    public void OnB30ConnBle(final String mac){
-        MyApp.getVpOperateManager().registerConnectStatusListener(mac,iaBleConnectStatusListener);
-        MyApp.getVpOperateManager().connectDevice(mac, new IConnectResponse() {
-            @Override
-            public void connectState(int i, BleGattProfile bleGattProfile, boolean b) {
-                Log.e(TAG,"----connectState="+i);
-                if(i == Code.REQUEST_SUCCESS){  //连接成功过
-                    if(bluetoothClient != null){
-                        bluetoothClient.stopSearch();
-                    }
-                }
-            }
-        }, new INotifyResponse() {
-            @Override
-            public void notifyState(int i) {
-                Log.e(TAG,"----notifiy="+i);
-                if(i == Code.REQUEST_SUCCESS){
-                    ConnBleHelpService connBleHelpService = new ConnBleHelpService();
-                    connBleHelpService.setConnBleHelpListener(new ConnBleHelpService.ConnBleHelpListener() {
-                        @Override
-                        public void connSuccState() {
-                            MyCommandManager.DEVICENAME = "B30";
-                            MyCommandManager.ADDRESS = mac;
-                            SharedPreferencesUtils.saveObject(MyApp.getContext(), "mylanya", "B30");
-                            SharedPreferencesUtils.saveObject(MyApp.getContext(), "mylanmac", mac);
-                            if(b30ConnStateListener != null){
-                                b30ConnStateListener.onB30Connect();
-                            }
-                        }
-                    });
-                    connBleHelpService.doConnOperater();
-                }
-            }
-        });
-    }
-
-
-    public interface B30ConnStateListener{
-        void onB30Connect();
-        void onB30Disconn();
-    }
 
     //监听蓝牙连接或断开的状态
     private IABleConnectStatusListener iaBleConnectStatusListener = new IABleConnectStatusListener() {
@@ -225,12 +209,16 @@ public class B30ConnStateReceiver extends BroadcastReceiver {
                 case Constants.STATUS_CONNECTED:    //已连接
                     Log.e(TAG,"-----监听--conn");
                     findPhoneListenerData();
+
                     break;
                 case Constants.STATUS_DISCONNECTED: //已断开
                     Log.e(TAG,"-----监听--disconn");
-                    if(b30ConnStateListener != null){
-                        b30ConnStateListener.onB30Disconn();
-                    }
+                    Intent intents = new Intent();
+                    intents.setAction(WatchUtils.B30_DISCONNECTED_ACTION);
+                    sendBroadcast(intents);
+//                    if(b30ConnStateListener != null){
+//                        b30ConnStateListener.onB30Disconn();
+//                    }
                     handler.sendEmptyMessage(AUTO_CONN_REQUEST_CODE);
                     break;
             }
@@ -267,4 +255,48 @@ public class B30ConnStateReceiver extends BroadcastReceiver {
             }
         });
     }
+
+
+    public void setB30ConnStateListener(B30ConnStateListener b30ConnStateListener) {
+        this.b30ConnStateListener = b30ConnStateListener;
+    }
+
+    public interface B30ConnStateListener{
+        void onB30Connect();
+        void onB30Disconn();
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try{
+            if(broadcastReceiver != null){
+                unregisterReceiver(broadcastReceiver);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mLocalBinder;
+    }
+
+
+    public class B30LoadBuilder extends Binder{
+        public  B30ConnStateService getB30Service(){
+            return B30ConnStateService.this;
+        }
+    }
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+        }
+    };
 }

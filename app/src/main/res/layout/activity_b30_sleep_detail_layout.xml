@@ -30,6 +30,7 @@
             android:id="@+id/detailSleepQuitRatingBar"
             android:layout_width="match_parent"
             android:numStars="5"
+            android:visibility="invisible"
             android:layout_gravity="center"
             android:layout_height="wrap_content" />
 
